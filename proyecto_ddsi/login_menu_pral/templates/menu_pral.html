@@ -1,0 +1,57 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../static/style.css">
+{% endblock css %}
+
+{% block title %}
+<title> Menú Principal </title>
+{% endblock title %}
+
+{% block content %}
+
+<center> <h1> Menú principal de <em>El Honor de los Prizzi</em> </h1> </center>
+<br>
+<center> <h3> Selecciona el área funcional a consultar</h3> </center>
+
+<form method="post">  
+    {% csrf_token %}
+    <div>
+        <button class="btn btn-primary" id="almacen-btn" name="almacen-btn" type="submit">
+            Almacén
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="contabilidad-btn" name="contabilidad-btn" type="submit">
+            Contabilidad
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="logistica-btn" name="logistica-btn" type="submit">
+            Logística
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="marketing-btn" name="marketing-btn" type="submit">
+            Marketing
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="rrhh-btn" name="rrhh-btn" type="submit">
+            Recursos Humanos
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-danger" id="cerrar-sesion-bd-app-btn" name="cerrar-sesion-bd-app-btn" type="submit">
+            Cerrar conexión a la Base de Datos y Salir de la aplicación
+        </button>
+    </div>
+    {% if error_message %}
+    <br>
+    <div class="alert alert-danger">
+        <center>{{ error_message }}</div></center>
+    </div>
+    {% endif %}
+</form> 
+
+{% endblock content %}

@@ -1,0 +1,62 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../static/style.css">
+{% endblock css %}
+
+{% block title %}
+<title> Menú Marketing </title>
+{% endblock title %}
+
+{% block content %}
+
+<center> <h1> Menú Marketing </h1> </center>
+<br>
+<center> <h3> Selecciona la acción a realizar:</h3> </center>
+
+<form method="post">  
+    {% csrf_token %}
+    <div>
+        <button class="btn btn-success" id="alta-oferta-prod-btn" name="alta-oferta-prod-btn" type="submit">
+            Dar de alta Oferta de Productos
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-danger" id="baja-oferta-prod-btn" name="baja-oferta-prod-btn" type="submit">
+            Dar de baja Oferta de Productos
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="consultar-oferta-prod-btn" name="consultar-oferta-prod-btn" type="submit">
+            Consultar Oferta de Productos
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-success" id="alta-camp-pub-btn" name="alta-camp-pub-btn" type="submit">
+            Dar de alta Campaña Publicitaria
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-danger" id="baja-camp-pub-btn" name="baja-camp-pub-btn" type="submit">
+            Dar de baja Campaña Publicitaria
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="consultar-camp-pub-btn" name="consultar-camp-pub-btn" type="submit">
+            Consultar Campaña Publicitaria
+        </button>
+    </div>
+    <center>
+        <div>
+            <a href="{% url 'menu' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+        </div>
+        </center>
+    {% if error_message %}
+    <br>
+    <div class="alert alert-danger">
+        <center>{{ error_message }}</div></center>
+    </div>
+    {% endif %}
+</form> 
+
+{% endblock content %}
