@@ -8,7 +8,7 @@ class OfertaEmpleo(models.Model):
     FechaInicio=models.DateField()
     FechaFin=models.DateField()
 
-class ContratoImplicado(models.Model):
+class Contrato(models.Model):
     DNI=models.CharField(max_length=9, primary_key=True)
     IDOfertaEmpleo=models.ForeignKey(OfertaEmpleo, on_delete=models.CASCADE , max_length=9)
     NombreEmpleado=models.CharField(max_length=30)
