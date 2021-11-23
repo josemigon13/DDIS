@@ -1,0 +1,62 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../static/style.css">
+{% endblock css %}
+
+{% block title %}
+<title> Menú Marketing </title>
+{% endblock title %}
+
+{% block content %}
+
+<center> <h1> Menú Almacén </h1> </center>
+<br>
+<center> <h3> Selecciona la acción a realizar:</h3> </center>
+
+<form method="post">  
+    {% csrf_token %}
+    <div>
+        <button class="btn btn-success" id="alta-lote-btn" name="alta-lote-btn" type="submit">
+            Dar de alta Lote de Productos
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-danger" id="baja-lote-btn" name="baja-lote-btn" type="submit">
+            Dar de baja Lote de Productos
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="listar-lotes-btn" name="listar-lotes-btn" type="submit">
+            Consultar Lista de Productos
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-success" id="alta-almacen-btn" name="alta-almacen-btn" type="submit">
+            Dar de alta Almacén
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-danger" id="baja-almacen-btn" name="baja-almacen-btn" type="submit">
+            Dar de baja Almacén
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="listar-almacenes-btn" name="listar-almacenes-btn" type="submit">
+            Consultar Lista de Almacenes
+        </button>
+    </div>
+    <center>
+        <div>
+            <a href="{% url 'menu' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+        </div>
+        </center>
+    {% if error_message %}
+    <br>
+    <div class="alert alert-danger">
+        <center>{{ error_message }}</div></center>
+    </div>
+    {% endif %}
+</form> 
+
+{% endblock content %}
