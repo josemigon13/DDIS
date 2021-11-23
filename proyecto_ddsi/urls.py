@@ -19,9 +19,9 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("login_menu_pral.urls")), # así, la primera página al arrancar el server es la de login a la BD
-    path('menu/', include("almacen.urls"))
-    path('menu/', include("contabilidad.urls"))
-    path('menu/', include("logistica.urls"))
-    path('menu/', include("marketing.urls"))
+    path('menu/', include("almacen.urls")),
+    path('menu/', include("contabilidad.urls")),
+    path('menu/', include("logistica.urls")),
+    path('menu/', include("marketing.urls")),
     path('menu/', include("rrhh.urls"))
 ]
