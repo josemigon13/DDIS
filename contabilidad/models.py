@@ -1,6 +1,7 @@
 from django.db import models
-from proyecto_ddsi.rrhh.models import ContratoImplicado
-from rrhh import models
+from proyecto_ddsi.rrhh.models import Contrato
+from proyecto_ddsi.marketing.models import CampaniaPublicitaria
+from proyecto_ddsi.logistica.models import Proveedor
 
 # Create your models here.
 
@@ -10,7 +11,7 @@ class InformeCuentas(models.Model):
 
 class InformeCampaña(models.Model):
     idInforme = models.ForeignKey(InformeCuentas, on_delete=models.CASCADE, primary_key=True)
-    idCampaña = models.ForeignKey(CampañaPublicitaria, on_delete=models.CASCADE)
+    IdCampania = models.ForeignKey(CampaniaPublicitaria, on_delete=models.CASCADE)
 
 class InformeSalarialEmpleado(models.Model):
     idInforme = models.ForeignKey(InformeCuentas, on_delete=models.CASCADE, primary_key=True)
