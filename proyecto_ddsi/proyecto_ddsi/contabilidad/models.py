@@ -1,4 +1,5 @@
 from django.db import models
+from proyecto_ddsi.rrhh.models import ContratoImplicado
 from rrhh import models
 
 # Create your models here.
