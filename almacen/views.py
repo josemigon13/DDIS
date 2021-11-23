@@ -1,9 +1,9 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.urls.base import is_valid_path
-from almacen.models import Almacen
-from almacen.models import LoteProductosAlmacena
+from .models import *
+from .forms import *
 
 # Create your views here.
 
@@ -11,39 +11,50 @@ def menu_almacen(request):
     if request.method == 'POST':
         keys_request_POST = request.POST.keys()
         if 'alta-lote-btn' in keys_request_POST:
-            pass
-            # return HttpResponseRedirect("/almacen/alta_of_prod")
+            return redirect('alta_lote')
         elif 'baja-lote-btn' in keys_request_POST:
-            pass
-            # return HttpResponseRedirect("/almacen/baja_of_prod")
+            return redirect('baja_lote')
         elif 'listar-lotes-btn' in keys_request_POST:
-            pass
-            # return HttpResponseRedirect("/almacen/consular_of_prod")
+            return redirect('listar_lotes')
         elif 'alta-almacen-btn' in keys_request_POST:
-            pass
-            # return HttpResponseRedirect("/almacen/alta_camp_pub")
+            return redirect('alta_almacen')
         elif 'baja-almacen-btn' in keys_request_POST:
-            pass
-            # return HttpResponseRedirect("/almacen/baja_camp_pub")
+            return redirect('baja_almacen')
         elif 'listar-almacenes-btn' in keys_request_POST:
-            pass
-            # return HttpResponseRedirect("/almacen/consultar_camp_pub")
+            return redirect('listar_almacenes')
     return render(request,"menu_almacen.html")
 
 def alta_lote(request):
-    return render(request,"alta_lote.html")
+    form = LoteProductosAlmacenaForm()
+    if request.method == 'POST' :
+        form = LoteProductosAlmacenaForm( request.POST )
+        if form.is_valid():
+            form.save()
+            return redirect('menu_almacen')
+    return render(request,"alta_lote.html",{'form':form})
 
 def baja_lote(request):
     return render(request,"baja_lote.html")
 
 def listar_lotes(request):
-    return render(request,"listar_lotes.html")
+    lotes = LoteProductosAlmacena.objects.all()
+    return render(request,"listar_lotes.html",{'lotes': lotes})
 
 def alta_almacen(request):
-    return render(request,"alta_almacen.html")
+    form = AlmacenForm()
+    if request.method == 'POST' :
+        form = AlmacenForm( request.POST )
+        if form.is_valid():
+            form.save()
+            return redirect('menu_almacen')
+        else:
+            error_message = "ERROR en los campos a rellenar del lote"
+            return render(request,"alta_almacen.html", {"form": form, "error_message": error_message})
+    return render(request,"alta_almacen.html",{'form':form})
 
 def baja_almacen(request):
     return render(request,"baja_almacen.html")
 
 def listar_almacenes(request):
-    return render(request,"listar_almacenes.html")
+    almacenes = Almacen.objects.all()
+    return render(request,"listar_almacenes.html",{'almacenes':almacenes})
