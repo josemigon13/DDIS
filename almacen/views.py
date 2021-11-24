@@ -33,8 +33,19 @@ def alta_lote(request):
             return redirect('menu_almacen')
     return render(request,"alta_lote.html",{'form':form})
 
-def baja_lote(request):
-    return render(request,"baja_lote.html")
+def baja_almacen(request):
+    form = pkLoteProductosAlmacenaForm()
+    if request.method == 'POST' :
+        form = pkLoteProductosAlmacenaForm( request.POST )
+        if form.is_valid():
+            pk = form.cleaned_data
+            lote = LoteProductosAlmacena.objects.get( IdLote=pk )
+            lote.delete()
+            return redirect('menu_almacen')
+        else:
+            error_message = "ERROR en el identificador del lote"
+            return render(request,"baja_lote.html", {"form": form, "error_message": error_message})
+    return render(request,"baja_lote.html",{'form':form})
 
 def listar_lotes(request):
     lotes = LoteProductosAlmacena.objects.all()
@@ -47,13 +58,21 @@ def alta_almacen(request):
         if form.is_valid():
             form.save()
             return redirect('menu_almacen')
-        else:
-            error_message = "ERROR en los campos a rellenar del lote"
-            return render(request,"alta_almacen.html", {"form": form, "error_message": error_message})
     return render(request,"alta_almacen.html",{'form':form})
 
 def baja_almacen(request):
-    return render(request,"baja_almacen.html")
+    form = pkAlmacenForm()
+    if request.method == 'POST' :
+        form = pkAlmacenForm( request.POST )
+        if form.is_valid():
+            pk = form.cleaned_data
+            almacen = Almacen.objects.get( IdAlmacen=pk )
+            almacen.delete()
+            return redirect('menu_almacen')
+        else:
+            error_message = "ERROR en el identificador del almacen"
+            return render(request,"baja_almacen.html", {"form": form, "error_message": error_message})
+    return render(request,"baja_almacen.html",{'form':form})
 
 def listar_almacenes(request):
     almacenes = Almacen.objects.all()

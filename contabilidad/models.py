@@ -1,7 +1,7 @@
 from django.db import models
-from proyecto_ddsi.rrhh.models import Contrato
-from proyecto_ddsi.marketing.models import CampaniaPublicitaria
-from proyecto_ddsi.logistica.models import Proveedor
+from rrhh.models import Contrato
+from marketing.models import CampaniaPublicitaria
+from logistica.models import Proveedor
 
 # Create your models here.
 
