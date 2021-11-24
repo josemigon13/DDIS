@@ -33,7 +33,7 @@ def alta_lote(request):
             return redirect('menu_almacen')
     return render(request,"alta_lote.html",{'form':form})
 
-def baja_almacen(request):
+def baja_lote(request):
     form = pkLoteProductosAlmacenaForm()
     if request.method == 'POST' :
         form = pkLoteProductosAlmacenaForm( request.POST )
