@@ -1,0 +1,52 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../static/style.css">
+{% endblock css %}
+
+{% block title %}
+<title> Menú Recursos Humanos </title>
+{% endblock title %}
+
+{% block content %}
+
+<center> <h1> Menú de <em>Recursos Humanos</em> </h1> </center>
+<br>
+<center> <h3> Selecciona la acción a realizar</h3> </center>
+
+<form method="post">  
+    {% csrf_token %}
+    <div>
+        <button class="btn btn-primary" id="alta-contrato-btn" name="alta-contrato-btn" type="submit">
+            Dar de alta contrato
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="contabilidad-btn" name="contabilidad-btn" type="submit">
+            Contabilidad
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="logistica-btn" name="logistica-btn" type="submit">
+            Logística
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="marketing-btn" name="marketing-btn" type="submit">
+            Marketing
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="rrhh-btn" name="rrhh-btn" type="submit">
+            Recursos Humanos
+        </button>
+    </div>
+    {% if error_message %}
+    <br>
+    <div class="alert alert-danger">
+        <center>{{ error_message }}</div></center>
+    </div>
+    {% endif %}
+</form> 
+
+{% endblock content %}
