@@ -2,13 +2,12 @@ from django.db import models
 from rrhh.models import Contrato
 from marketing.models import CampaniaPublicitaria
 from logistica.models import Proveedor
-import settings
 
 # Create your models here.
 
 class InformeCuentas(models.Model):
     idInforme = models.CharField(max_length=9, primary_key=True)
-    fechaInforme = models.DateField(input_formats=settings.DATE_INPUT_FORMATS)
+    fechaInforme = models.DateField()
 
 class InformeCampania(models.Model):
     idInforme = models.ForeignKey(InformeCuentas, on_delete=models.CASCADE, primary_key=True)

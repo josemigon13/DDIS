@@ -1,7 +1,9 @@
+from django.forms.fields import DateTimeField
 from django.forms import ModelForm
 from .models import *
 
 class InformeForm( ModelForm ):
+    fechaInforme = DateTimeField(input_formats=['%MM-%YY'])
     class Meta:
         model = InformeCuentas
         fields = '__all__'

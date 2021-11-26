@@ -1,1 +1,0 @@
-DATE_INPUT_FORMATS = ['%MM/%YY']
