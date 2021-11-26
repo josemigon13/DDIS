@@ -1,0 +1,102 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../static/style.css">
+{% endblock css %}
+
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    
+    <center>
+        <h1> Tablas de contabilidad de la BD </h1> 
+
+    <h2>Informe de cuentas</h2>
+    <table border>
+    <tr align=center>
+        <th scope="col"> idInforme </th>
+        <th scope="col"> fechaInforme </th>
+    </tr>
+    {% for tupla in informe_cuentas %}
+    <tr align=center>
+        <td>{{tupla.idInforme}}</td><td> {{tupla.fechaInforme}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+
+    <br>
+    <h2>Informe de campaña publicitaria</h2>
+    <table border>
+    <tr align=center>
+        <th scope="col"> idInforme </th>
+        <th scope="col"> idCampania</th>
+    </tr>
+    {% for tupla in informe_campania %}
+    <tr align=center>
+        <td>{{tupla.idInforme}}</td><td> {{tupla.idCampania}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+
+    <br>
+    <h2>Informe de proveedor</h2>
+    <table border>
+    <tr align=center>
+        <th scope="col"> idInforme </th>
+        <th scope="col"> NumProveedor </th>
+    </tr>
+    {% for tupla in informe_proveedor %}
+    <tr align=center>
+        <td>{{tupla.idInforme}}</td><td> {{tupla.NumProveedor}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+
+    <br>
+    <h2>Informe salarial</h2>
+    <table border>
+    <tr align=center>
+        <th scope="col"> idInforme </th>
+        <th scope="col"> DNI </th>
+    </tr>
+    {% for tupla in informe_salarial %}
+    <tr align=center>
+        <td>{{tupla.idInforme}}</td><td> {{tupla.DNI}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+
+    <br>
+    <h2>Informe tributario</h2>
+    <table border>
+    <tr align=center>
+        <th scope="col"> idInforme </th>
+        <th scope="col"> importeTributario</th>
+    </tr>
+    {% for tupla in informe_tributario %}
+    <tr align=center>
+        <td>{{tupla.idInforme}}</td><td> {{tupla.importeTributario}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+
+    <br>
+    <h2>Informe de punto de venta</h2>
+    <table border>
+    <tr align=center>
+        <th scope="col"> idInforme </th>
+        <th scope="col"> beneficiosPOS </th>
+        <th scope="col"> idPOS </th>
+    </tr>
+    {% for tupla in informe_POS %}
+    <tr align=center>
+        <td>{{tupla.idInforme}}</td><td> {{tupla.beneficiosPOS}}</td><td> {{tupla.idPOS}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+
+    </center>
+</form>
+
+{% endblock content %}
