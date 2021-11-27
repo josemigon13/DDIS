@@ -12,6 +12,6 @@ class Contrato(models.Model):
     DNI=models.CharField(max_length=9, primary_key=True)
     IDOfertaEmpleo=models.ForeignKey(OfertaEmpleo, on_delete=models.CASCADE , max_length=9)
     Nombre_Empleado=models.CharField(max_length=30)
-    Tlf_Empleado=models.IntegerField(max_length=9)
-    NumSegSocial=models.IntegerField(max_length=12)
+    Tlf_Empleado=models.IntegerField()
+    NumSegSocial=models.IntegerField()
     Salario=models.DecimalField(decimal_places=2, max_digits=10)

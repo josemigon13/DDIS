@@ -26,9 +26,9 @@ class InformeProveedorForm( ModelForm ):
 class InformeTributarioForm( ModelForm ):
     class meta:
         model = InformeTributario
-        fields = ['importeTributario']
+        fields = ['ImporteTributario']
 
 class InformePOSForm( ModelForm ):
     class meta:
-        model = InformeTributario
-        fields = ['idPOS','beneficiosPOS']
+        model = InformePOS
+        fields = ['IdPOS','BeneficiosPOS']
