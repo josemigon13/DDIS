@@ -5,8 +5,8 @@ from django.db import models
 class OfertaEmpleo(models.Model):
     IDOfertaEmpleo=models.CharField(max_length=9, primary_key=True)
     ListadoEmpleos=models.CharField(max_length=100)
-    FechaIni_OfertEmp=models.DateField()
-    FechaFin_OfertEmp=models.DateField()
+    FechaIni_OferEmp=models.DateField()
+    FechaFin_OferEmp=models.DateField()
 
 class Contrato(models.Model):
     DNI=models.CharField(max_length=9, primary_key=True)

@@ -50,11 +50,9 @@ def menu(request):
          # Me quedo con las claves para coger "almacen-btn", que es la que me interesa 
          # coger (según el boton que pulse y se escoja hacer una acción u otra)
       if 'almacen-btn' in keys_request_POST:
-         pass # se pone cuando aun falta por implementar
-         # return HttpResponseRedirect("menu/almacen")
+         return HttpResponseRedirect("menu/almacen")
       elif 'contabilidad-tablas-btn' in keys_request_POST:
-         pass
-         # return HttpResponseRedirect("menu/contabilidad")
+         HttpResponseRedirect("menu/contabilidad")
       elif 'logistica-btn' in keys_request_POST:
          pass
          # return HttpResponseRedirect("menu/logistica")

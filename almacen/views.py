@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.urls.base import is_valid_path
@@ -11,17 +11,17 @@ def menu_almacen(request):
     if request.method == 'POST':
         keys_request_POST = request.POST.keys()
         if 'alta-lote-btn' in keys_request_POST:
-            return redirect('alta_lote')
+            return HttpResponseRedirect('alta_lote')
         elif 'baja-lote-btn' in keys_request_POST:
-            return redirect('baja_lote')
+            return HttpResponseRedirect('baja_lote')
         elif 'listar-lotes-btn' in keys_request_POST:
-            return redirect('listar_lotes')
+            return HttpResponseRedirect('listar_lotes')
         elif 'alta-almacen-btn' in keys_request_POST:
-            return redirect('alta_almacen')
+            return HttpResponseRedirect('alta_almacen')
         elif 'baja-almacen-btn' in keys_request_POST:
-            return redirect('baja_almacen')
+            return HttpResponseRedirect('baja_almacen')
         elif 'listar-almacenes-btn' in keys_request_POST:
-            return redirect('listar_almacenes')
+            return HttpResponseRedirect('listar_almacenes')
     return render(request,"menu_almacen.html")
 
 def alta_lote(request):
@@ -30,7 +30,7 @@ def alta_lote(request):
         form = LoteProductosAlmacenaForm( request.POST )
         if form.is_valid():
             form.save()
-            return redirect('menu_almacen')
+            return HttpResponseRedirect('menu_almacen')
     return render(request,"alta_lote.html",{'form':form})
 
 def baja_lote(request):
@@ -39,16 +39,16 @@ def baja_lote(request):
         form = pkLoteProductosAlmacenaForm( request.POST )
         if form.is_valid():
             pk = form.cleaned_data
-            lote = LoteProductosAlmacena.objects.get( IdLote=pk )
+            lote = LoteProductos.objects.get( IdLote=pk )
             lote.delete()
-            return redirect('menu_almacen')
+            return HttpResponseRedirect('menu_almacen')
         else:
             error_message = "ERROR en el identificador del lote"
             return render(request,"baja_lote.html", {"form": form, "error_message": error_message})
     return render(request,"baja_lote.html",{'form':form})
 
 def listar_lotes(request):
-    lotes = LoteProductosAlmacena.objects.all()
+    lotes = LoteProductos.objects.all()
     return render(request,"listar_lotes.html",{'lotes': lotes})
 
 def alta_almacen(request):
@@ -57,7 +57,7 @@ def alta_almacen(request):
         form = AlmacenForm( request.POST )
         if form.is_valid():
             form.save()
-            return redirect('menu_almacen')
+            return HttpResponseRedirect('menu_almacen')
     return render(request,"alta_almacen.html",{'form':form})
 
 def baja_almacen(request):
@@ -68,7 +68,7 @@ def baja_almacen(request):
             pk = form.cleaned_data
             almacen = Almacen.objects.get( IdAlmacen=pk )
             almacen.delete()
-            return redirect('menu_almacen')
+            return HttpResponseRedirect('menu_almacen')
         else:
             error_message = "ERROR en el identificador del almacen"
             return render(request,"baja_almacen.html", {"form": form, "error_message": error_message})

@@ -8,15 +8,15 @@ class AlmacenForm( ModelForm ):
         
 class LoteProductosAlmacenaForm( ModelForm ):
     class Meta:
-        model = LoteProductosAlmacena
+        model = LoteProductos
         fields = '__all__'
 
 class pkAlmacenForm( ModelForm ):
     class Meta:
         model = Almacen
-        fields = ['IdAlmacén']
+        fields = ['IdAlmacen']
         
 class pkLoteProductosAlmacenaForm( ModelForm ):
     class Meta:
-        model = LoteProductosAlmacena
+        model = LoteProductos
         fields = ['IdLote']

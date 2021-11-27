@@ -6,14 +6,14 @@ class CampaniaPublicitaria(models.Model):
     IdCampania = models.CharField(max_length=10, primary_key=True)
     Nombre_CampPub = models.CharField(max_length=40)
     Descripcion_CampPub = models.CharField(max_length=100)
-    Precio_CampPub = models.DecimalField(decimal_places=2)
+    Precio_CampPub = models.DecimalField(max_digits=10, decimal_places=2)
     ListaMediosEmision = models.CharField(max_length=100)
 
 class OfertaProductos(models.Model):
     IdOfertaProd = models.CharField(max_length=10, primary_key=True)
     Nombre_OferProd = models.CharField(max_length=40)
-    ListaProductos = models.CharField(max_length=10)
-    Precio_OferProd = models.DecimalField(decimal_places=2)
+    ListaProductos = models.CharField(max_length=100)
+    Precio_OferProd = models.DecimalField(max_digits=10, decimal_places=2)
     FechaIni_OferProd = models.DateField()
     FechaFin_OferProd = models.DateField()
 

@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.urls.base import is_valid_path
@@ -12,22 +12,22 @@ def menu_contabilidad(request):
         keys_request_POST = request.POST.keys()
 
         if 'computar-salario-btn' in keys_request_POST:
-            return redirect('computar_salario')
+            return HttpResponseRedirect('computar_salario')
 
         elif 'computar-pagoProveedor-btn' in keys_request_POST:
-            return redirect('computar_pagoProveedor')
+            return HttpResponseRedirect('computar_pagoProveedor')
 
         elif 'computar-beneficiosPOS-btn' in keys_request_POST:
-            return redirect('computar_beneficiosPOS')
+            return HttpResponseRedirect('computar_beneficiosPOS')
 
         elif 'computar-impuestos-btn' in keys_request_POST:
-            return redirect('computar_impuestos')
+            return HttpResponseRedirect('computar_impuestos')
 
         elif 'computar-costeCampania-btn' in keys_request_POST:
-            return redirect('computar_costeCampania')
+            return HttpResponseRedirect('computar_costeCampania')
         
         elif 'listar-informes-btn' in keys_request_POST:
-            return redirect('listar_informes')
+            return HttpResponseRedirect('listar_informes')
 
     return render(request,"menu_contabilidad.html")
 
@@ -68,7 +68,7 @@ def computar_salario(request):
                 id = form1.cleaned_data["idInforme"]
                 obj = InformeSalarialEmpleado(idInforme=id, DNI=form2.cleaned_data)
                 obj.save()
-                return redirect('menu_contabilidad')
+                return HttpResponseRedirect('menu_contabilidad')
     return render(request,"computar_salario.html",{'form1':form1, 'form2':form2})
 
 def computar_costeCampania(request):
@@ -85,7 +85,7 @@ def computar_costeCampania(request):
                 id = form1.cleaned_data["idInforme"]
                 obj = InformeSalarialEmpleado(idInforme=id, IdCampania=form2.cleaned_data)
                 obj.save()
-                return redirect('menu_contabilidad')
+                return HttpResponseRedirect('menu_contabilidad')
             except:
                 error_message = "ERROR: No existe la campaña publicitaria proporcionada en la BD"
                 return render( request, "menu_contabilidad.html" , {"error_message": error_message})
@@ -127,7 +127,7 @@ def computar_pagoProveedor(request):
                 id = form1.cleaned_data["idInforme"]
                 obj = InformeSalarialEmpleado(idInforme=id, NumProveedor=form2.cleaned_data)
                 obj.save()
-                return redirect('menu_contabilidad')
+                return HttpResponseRedirect('menu_contabilidad')
     return render(request,"computar_pagoProveedor.html",{'form1':form1, 'form2':form2})
 
 def computar_impuestos(request):
@@ -147,7 +147,7 @@ def computar_impuestos(request):
                 id = form1.cleaned_data["idInforme"]
                 obj = InformeSalarialEmpleado(idInforme=id, importeTributario=form2.cleaned_data)
                 obj.save()
-                return redirect('menu_contabilidad')
+                return HttpResponseRedirect('menu_contabilidad')
             except:
                 error_message="ERROR: Ya existe un informe tributario para la fecha proporcionada en la BD"
                 return render( request, "menu_contabilidad.html" , {"error_message": error_message})
@@ -183,7 +183,7 @@ def computar_beneficiosPOS(request):
                 id = form1.cleaned_data["idInforme"]
                 obj = InformeSalarialEmpleado(idInforme=id, beneficiosPOS=form2.cleaned_data)
                 obj.save()
-                return redirect('menu_contabilidad')
+                return HttpResponseRedirect('menu_contabilidad')
     return render(request,"computar_beneficiosPOS.html",{'form1':form1, 'form2':form2})
 
 def listar_informes(request) : 

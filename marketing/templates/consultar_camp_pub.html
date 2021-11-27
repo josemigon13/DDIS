@@ -1,0 +1,48 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../static/style.css">
+{% endblock css %}
+
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <!--
+    {% if error_message_mostrar_tabs %}
+        <br>
+        <div class="alert alert-danger">
+            <center>{{ error_message_mostrar_tabs }}</div></center>
+        </div>
+        
+    {% elif tablas_vacias %}
+        <br>
+        <div class="alert alert-info">
+            <center>Las tablas de la Base de Datos están vacías</div></center>
+        </div>
+    
+    {% endif%}
+    -->
+    
+    <center>
+        <h1> Lista de Lotes de Productos </h1> 
+    <table border>
+    <tr align=center>
+        <th scope="col"> IdLote </th>
+        <th scope="col"> IdAlmacén </th>
+        <th scope="col"> Descripción </th>
+        <th scope="col"> Unidad </th>
+        <th scope="col"> Cantidad </th>
+        <th scope="col"> Coste </th>
+    </tr>
+    {% for lote in lotes %}
+    <tr align=center>
+        <td>{{lote.IdLote}}</td><td>{{lote.IdAlmacén}}</td><td>{{lote.Descripción}}</td><td>{{lote.Unidad}}</td><td>{{lote.Cantidad}}</td><td> {{lote.Coste}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+    </center>
+</form>
+
+{% endblock content %}
