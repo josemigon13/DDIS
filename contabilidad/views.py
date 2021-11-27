@@ -161,10 +161,10 @@ def computar_beneficiosPOS(request):
         form2 = InformePOSForm(request.POST)
         if form1.is_valid() and form2.is_valid():
             exit = True
-            IDs = list(InformePOS.objects.values_list('IdPOS', flat=True))
+            IDs = list(InformePOS.objects.values_list('CodigoPOS', flat=True))
             try:
-                IDs.index(form2.cleaned_data["IdPOS"])
-                IDs = list(InformePOS.objects.filter(IdPOS = form2.cleaned_data["IdPOS"]).values_list('IdInforme', flat=True))
+                IDs.index(form2.cleaned_data["CodigoPOS"])
+                IDs = list(InformePOS.objects.filter(CodigoPOS = form2.cleaned_data["CodigoPOS"]).values_list('IdInforme', flat=True))
                 Fechas = []
                 for id in IDs:
                     Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_informe'))

@@ -1,9 +1,15 @@
-from django.forms.fields import DateTimeField
+from django import forms
 from django.forms import ModelForm
 from .models import *
 
+# class InformeForm( forms.Form ):
+#     # IdInforme = forms.CharField(label="Identificador del Informe:",
+#     #                                 widget=forms.TextInput(attrs={'placeholder':  "Introduce identificador"}))
+#     # Fecha_Informe = forms.DateField(  label="Fecha del Informe (en formato MM-YYYY)",
+#     #                                 widget=forms.TextInput(attrs={'placeholder':  "Introduce fecha de informe"}), 
+#     #                                 input_formats=['%MM-%YYYY'])
 class InformeForm( ModelForm ):
-    fechaInforme = DateTimeField(input_formats=['%MM-%YY'])
+    #fechaInforme = DateTimeField(input_formats=['%MM-%YYYY']) # daba fallo al migrar
     class Meta:
         model = InformeCuentas
         fields = '__all__'
@@ -31,4 +37,4 @@ class InformeTributarioForm( ModelForm ):
 class InformePOSForm( ModelForm ):
     class meta:
         model = InformePOS
-        fields = ['IdPOS','BeneficiosPOS']
+        fields = ['CodigoPOS','BeneficiosPOS']

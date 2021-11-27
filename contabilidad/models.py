@@ -28,4 +28,4 @@ class InformeTributario(models.Model):
 class InformePOS(models.Model):
     IdInforme = models.OneToOneField(InformeCuentas, on_delete=models.CASCADE, primary_key=True)
     BeneficiosPOS = models.DecimalField(max_digits=10, decimal_places=2)
-    IdPOS = models.CharField(max_length=9, default="")
+    CodigoPOS = models.CharField(max_length=9, default="")
