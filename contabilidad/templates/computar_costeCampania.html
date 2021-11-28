@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 
 {% block css %}
-<link rel="stylesheet" href="../../static/style.css">
+<link rel="stylesheet" href="../../../static/style.css">
 {% endblock css %}
 
 {% block content %}
@@ -11,13 +11,15 @@
     <form method="post">  
         {% csrf_token %}
         <div class="container">
-            {{ form.as_p }}
+            {{ form1 }}
+            <br>
+            {{ form2 }}
             <button type="submit">Introducir datos del informe</button>   
         </div>
     </form>  
     <center>
     <div>
-        <a href="{% url 'menu' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+        <a href="{% url 'menu_contabilidad' %}" class="btn btn-secondary" id="volver-menu-contabilidad-btn">Volver atrás</a>
     </div>
     </center>
     {% if error_message %}

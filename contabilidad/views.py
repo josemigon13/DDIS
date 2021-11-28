@@ -1,7 +1,5 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.urls.base import is_valid_path
 from .models import *
 from .forms import *
 
@@ -32,107 +30,86 @@ def menu_contabilidad(request):
     return render(request,"menu_contabilidad.html")
 
 def computar_salario(request):
-    form1 = InformeForm()
-    form2 = InformeSalarialForm()
     if request.method == 'POST' :
         form1 = InformeForm(request.POST)
         form2 = InformeSalarialForm(request.POST)
         if form1.is_valid() and form2.is_valid():
             exit = True
-            DNIs = list(Contrato.objects.values_list('DNI', flat=True))
+            DNIs = list(InformeSalarialEmpleado.objects.values_list('DNI', flat=True))
             try:
-                DNIs.index(form2.cleaned_data)
-                DNIs = list(InformeSalarialEmpleado.objects.values_list('DNI', flat=True))
+                DNIs.index(list(InformeSalarialEmpleado.objects.filter(DNI = form2.cleaned_data["DNI"]).values_list('DNI', flat=True))[0])
+                IDs = list(InformeSalarialEmpleado.objects.filter(DNI = form2.cleaned_data["DNI"]).values_list('IdInforme', flat=True))
+                Fechas = []
+                for id in IDs:
+                    Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_Informe'))
                 try:
-                    DNIs.index(form2.cleaned_data)
-                    IDs = list(InformeSalarialEmpleado.objects.filter(DNI = form2.cleaned_data).values_list('IdInforme', flat=True))
-                    Fechas = []
-                    for id in IDs:
-                        Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_informe'))
-                    try:
-                        Fechas.index(form1.cleaned_data["Fecha_informe"])
-                        exit = False
-                    except:
-                        error_message = "ERROR: Ya existe un informe salarial en\
-                        correspondencia con los datos de entrada"
-                        return render( request, "menu_contabilidad.html" , {"error_message": error_message})
+                    Fechas.index(form1.cleaned_data["Fecha_Informe"])
+                    error_message = "ERROR: Ya existe un informe salarial para el\
+                    empleado en la fecha proporcionada en la BD"
+                    return render( request, "computar_salario.html" , {'form1':InformeForm(), 'form2':InformeSalarialForm(), 'error_message': error_message}) 
                 except:
                     exit = False
             except:
-                error_message = "ERROR: El DNI proporcionado no identifica a\
-                ningún empleado de la BD"
-                return render( request, "menu_contabilidad.html" , {"error_message": error_message})
+                exit = False
               
             if exit==False :
-                form1.save()
-                id = form1.cleaned_data["IdInforme"]
-                obj = InformeSalarialEmpleado(IdInforme=id, DNI=form2.cleaned_data)
+                obj = InformeCuentas(IdInforme=form1.cleaned_data["IdInforme"], Fecha_Informe=form1.cleaned_data["Fecha_Informe"])
                 obj.save()
-                return HttpResponseRedirect('menu_contabilidad')
-    return render(request,"computar_salario.html",{'form1':form1, 'form2':form2})
+                obj = InformeSalarialEmpleado(IdInforme=InformeCuentas.objects.get(IdInforme = form1.cleaned_data["IdInforme"]), DNI=form2.cleaned_data["DNI"])
+                obj.save()
+                return HttpResponseRedirect('../')
+    return render(request,"computar_salario.html",{'form1':InformeForm(), 'form2':InformeSalarialForm()})
 
 def computar_costeCampania(request):
-    form1 = InformeForm()
-    form2 = InformeCampaniaForm()
     if request.method == 'POST' :
         form1 = InformeForm(request.POST)
         form2 = InformeCampaniaForm(request.POST)
         if form1.is_valid() and form2.is_valid():
-            IDsCampanias = list(CampaniaPublicitaria.objects.values_list('IdCampania', flat=True))
+            IDsCampanias = list(InformeCampania.objects.values_list('IdCampania', flat=True))
             try:
-                IDsCampanias.index(form2.cleaned_data)
-                form1.save()
-                id = form1.cleaned_data["IdInforme"]
-                obj = InformeSalarialEmpleado(IdInforme=id, IdCampania=form2.cleaned_data)
-                obj.save()
-                return HttpResponseRedirect('menu_contabilidad')
+                IDsCampanias.index(list(InformeCampania.objects.filter(IdCampania = form2.cleaned_data["IdCampania"]).values_list('IdCampania', flat=True))[0])
+                error_message = "ERROR: Ya existe un informe para la campaña publicitaria proporcionada en la BD"
+                return render( request, "computar_costeCampania.html" , {'form1':InformeForm(), 'form2':InformeCampaniaForm(), 'error_message': error_message})
             except:
-                error_message = "ERROR: No existe la campaña publicitaria proporcionada en la BD"
-                return render( request, "menu_contabilidad.html" , {"error_message": error_message})
-    return render(request,"computar_costeCampania.html",{'form1':form1, 'form2':form2})
+                obj = InformeCuentas(IdInforme=form1.cleaned_data["IdInforme"], Fecha_Informe=form1.cleaned_data["Fecha_Informe"])
+                obj.save()
+                obj = InformeCampania(IdInforme=InformeCuentas.objects.get(IdInforme = form1.cleaned_data["IdInforme"]), IdCampania=form2.cleaned_data["IdCampania"])
+                obj.save()
+                return HttpResponseRedirect('../')
+    return render(request,"computar_costeCampania.html",{'form1':InformeForm(), 'form2':InformeCampaniaForm()})
 
 def computar_pagoProveedor(request):
-    form1 = InformeForm()
-    form2 = InformeProveedorForm()
     if request.method == 'POST' :
         form1 = InformeForm(request.POST)
         form2 = InformeProveedorForm(request.POST)
         if form1.is_valid() and form2.is_valid():
             exit = True
-            Proveedores = list(Proveedor.objects.values_list('NumProveedor', flat=True))
+            Proveedores = list(InformeProveedor.objects.values_list('NumProveedor', flat=True))
             try:
-                Proveedores.index(form2.cleaned_data)
-                Proveedores = list(InformeProveedor.objects.values_list('NumProveedor', flat=True))
+                Proveedores.index(list(InformeProveedor.objects.filter(NumProveedor = form2.cleaned_data["NumProveedor"]).values_list('NumProveedor', flat=True))[0])
+                IDs = list(InformeProveedor.objects.filter(NumProveedor = form2.cleaned_data["NumProveedor"]).values_list('IdInforme', flat=True))
+                Fechas = []
+                for id in IDs:
+                    Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_Informe'))
                 try:
-                    Proveedores.index(form2.cleaned_data)
-                    IDs = list(InformeProveedor.objects.filter(NumProveedor = form2.cleaned_data).values_list('IdInforme', flat=True))
-                    Fechas = []
-                    for id in IDs:
-                        Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_informe'))
-                    try:
-                        Fechas.index(form1.cleaned_data["Fecha_informe"])
-                        exit = False
-                    except:
-                        error_message = "ERROR: Ya existe un informe de proveedor en\
-                        correspondencia con los datos de entrada"
-                        return render( request, "menu_contabilidad.html" , {"error_message": error_message})
+                    Fechas.index(form1.cleaned_data["Fecha_Informe"])
+                    error_message = "ERROR: Ya existe un informe de proveedor para\
+                    la fecha proporcionada en la BD"
+                    return render( request, "computar_pagoProveedor.html" , {'form1':InformeForm(), 'form2':InformeProveedorForm(), 'error_message': error_message})
                 except:
                     exit = False
             except:
-                error_message="ERROR: No existe el proveedor proporcionado en la BD"
-                return render( request, "menu_contabilidad.html" , {"error_message": error_message})
+                exit = False
             
             if exit == False:
-                form1.save()
-                id = form1.cleaned_data["IdInforme"]
-                obj = InformeSalarialEmpleado(IdInforme=id, NumProveedor=form2.cleaned_data)
+                obj = InformeCuentas(IdInforme=form1.cleaned_data["IdInforme"], Fecha_Informe=form1.cleaned_data["Fecha_Informe"])
                 obj.save()
-                return HttpResponseRedirect('menu_contabilidad')
-    return render(request,"computar_pagoProveedor.html",{'form1':form1, 'form2':form2})
+                obj = InformeProveedor(IdInforme=InformeCuentas.objects.get(IdInforme = form1.cleaned_data["IdInforme"]), NumProveedor=form2.cleaned_data["NumProveedor"])
+                obj.save()
+                return HttpResponseRedirect('../')
+    return render(request,"computar_pagoProveedor.html",{'form1':InformeForm(), 'form2':InformeProveedorForm()})
 
 def computar_impuestos(request):
-    form1 = InformeForm()
-    form2 = InformeTributarioForm()
     if request.method == 'POST' :
         form1 = InformeForm(request.POST)
         form2 = InformeTributarioForm(request.POST)
@@ -140,22 +117,20 @@ def computar_impuestos(request):
             IDs = list(InformeTributario.objects.values_list('IdInforme', flat=True))
             Fechas = []
             for id in IDs:
-                Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_informe'))
+                Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_Informe'))
             try:
-                Fechas.index(form1.cleaned_data["Fecha_informe"])
-                form1.save()
-                id = form1.cleaned_data["IdInforme"]
-                obj = InformeSalarialEmpleado(IdInforme=id, importeTributario=form2.cleaned_data)
-                obj.save()
-                return HttpResponseRedirect('menu_contabilidad')
-            except:
+                Fechas.index(form1.cleaned_data["Fecha_Informe"])
                 error_message="ERROR: Ya existe un informe tributario para la fecha proporcionada en la BD"
-                return render( request, "menu_contabilidad.html" , {"error_message": error_message})
-    return render(request,"computar_impuestos.html",{'form1':form1, 'form2':form2})
+                return render( request, "computar_impuestos.html" , {'form1':InformeForm(), 'form2':InformeTributarioForm(), 'error_message': error_message})
+            except:
+                obj = InformeCuentas(IdInforme=form1.cleaned_data["IdInforme"], Fecha_Informe=form1.cleaned_data["Fecha_Informe"])
+                obj.save()
+                obj = InformeTributario(IdInforme=InformeCuentas.objects.get(IdInforme = form1.cleaned_data["IdInforme"]), ImporteTributario=form2.cleaned_data["ImporteTributario"])
+                obj.save()
+                return HttpResponseRedirect('../')
+    return render(request,"computar_impuestos.html",{'form1':InformeForm(), 'form2':InformeTributarioForm()})
 
 def computar_beneficiosPOS(request):
-    form1 = InformeForm()
-    form2 = InformePOSForm()
     if request.method == 'POST' :
         form1 = InformeForm(request.POST)
         form2 = InformePOSForm(request.POST)
@@ -167,26 +142,26 @@ def computar_beneficiosPOS(request):
                 IDs = list(InformePOS.objects.filter(CodigoPOS = form2.cleaned_data["CodigoPOS"]).values_list('IdInforme', flat=True))
                 Fechas = []
                 for id in IDs:
-                    Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_informe'))
+                    Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_Informe'))
                 try:
-                    Fechas.index(form1.cleaned_data["Fecha_informe"])
-                    exit = False
+                    Fechas.index(form1.cleaned_data["Fecha_Informe"])
+                    error_message = "ERROR: Ya existe un informe para el punto de venta en\
+                    la fecha proporcionada en la BD"
+                    return render( request, "computar_beneficiosPOS.html" , {'form1':InformeForm(), 'form2':InformePOSForm(), 'error_message': error_message})
                 except:
-                    error_message = "ERROR: Ya existe un informe de punto de venta en\
-                    correspondencia con los datos de entrada"
-                    return render( request, "menu_contabilidad.html" , {"error_message": error_message})
+                    exit = False
             except:
                 exit = False
             
             if exit == False:
-                form1.save()
-                id = form1.cleaned_data["IdInforme"]
-                obj = InformeSalarialEmpleado(IdInforme=id, beneficiosPOS=form2.cleaned_data)
+                obj = InformeCuentas(IdInforme=form1.cleaned_data["IdInforme"], Fecha_Informe=form1.cleaned_data["Fecha_Informe"])
                 obj.save()
-                return HttpResponseRedirect('menu_contabilidad')
-    return render(request,"computar_beneficiosPOS.html",{'form1':form1, 'form2':form2})
+                obj = InformePOS(IdInforme=InformeCuentas.objects.get(IdInforme = form1.cleaned_data["IdInforme"]), BeneficiosPOS=form2.cleaned_data["BeneficiosPOS"], CodigoPOS=form2.cleaned_data["CodigoPOS"])
+                obj.save()
+                return HttpResponseRedirect('../')
+    return render(request,"computar_beneficiosPOS.html",{'form1':InformeForm(), 'form2':InformePOSForm()})
 
-def listar_informes(request) : 
+def listar_informes(request) :
     informe_cuentas = InformeCuentas.objects.all()
     informe_salarial = InformeSalarialEmpleado.objects.all()
     informe_tributario = InformeTributario.objects.all()

@@ -16,36 +16,43 @@
 
 <form method="post">  
     {% csrf_token %}
+    <center>
     <div>
-        <button class="btn btn-success" id="computar-salario-btn" name="computar-salario-btn" type="submit">
+        <button class="container" id="computar-salario-btn" name="computar-salario-btn" type="submit">
             Computar coste de salario de un trabajador
         </button>
     </div>
     <div>
-        <button class="btn btn-danger" id="computar-pagoProveedor-btn" name="computar-pagoProveedor-btn" type="submit">
+        <button class="container" id="computar-pagoProveedor-btn" name="computar-pagoProveedor-btn" type="submit">
             Computar coste de pago a un proveedor
         </button>
     </div>
     <div>
-        <button class="btn btn-primary" id="computar-beneficiosPOS-btn" name="computar-beneficiosPOS-btn" type="submit">
+        <button class="container" id="computar-beneficiosPOS-btn" name="computar-beneficiosPOS-btn" type="submit">
             Computar beneficios de un punto de venta
         </button>
     </div>
     <div>
-        <button class="btn btn-success" id="computar-impuestos-btn" name="computar-impuestos-btn" type="submit">
+        <button class="container" id="computar-impuestos-btn" name="computar-impuestos-btn" type="submit">
             Computar impuestos
         </button>
     </div>
     <div>
-        <button class="btn btn-danger" id="computar-costeCampania-btn" name="computar-costeCampania-btn" type="submit">
+        <button class="container" id="computar-costeCampania-btn" name="computar-costeCampania-btn" type="submit">
             Computar coste de una campaña publicitaria
         </button>
     </div>
+    <div>
+        <button class="container" id="listar-informes-btn" name="listar-informes-btn" type="submit">
+            Listar informes de la BD
+        </button>
+    </div>
+    </center>
     <center>
         <div>
             <a href="{% url 'menu' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
         </div>
-        </center>
+    </center>
     {% if error_message %}
     <br>
     <div class="alert alert-danger">

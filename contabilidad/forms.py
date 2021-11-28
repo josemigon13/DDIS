@@ -1,18 +1,17 @@
 from django import forms
 from django.forms import ModelForm
 from .models import *
+import datetime
 
-# class InformeForm( forms.Form ):
-#     # IdInforme = forms.CharField(label="Identificador del Informe:",
-#     #                                 widget=forms.TextInput(attrs={'placeholder':  "Introduce identificador"}))
-#     # Fecha_Informe = forms.DateField(  label="Fecha del Informe (en formato MM-YYYY)",
-#     #                                 widget=forms.TextInput(attrs={'placeholder':  "Introduce fecha de informe"}), 
-#     #                                 input_formats=['%MM-%YYYY'])
-class InformeForm( ModelForm ):
-    #fechaInforme = DateTimeField(input_formats=['%MM-%YYYY']) # daba fallo al migrar
+class InformeForm( forms.ModelForm ):
+    DATE_SELECTION = []
+    for year in range(1999, (datetime.datetime.now().year+1)):
+        for month in range (1, 12+1):
+            DATE_SELECTION.append(("1/"+str(month)+"/"+str(year), "1/"+str(month)+"/"+str(year)))
+    Fecha_Informe = forms.DateField(widget=forms.Select(choices=DATE_SELECTION))
     class Meta:
         model = InformeCuentas
-        fields = '__all__'
+        fields = ['IdInforme']
 
 class InformeSalarialForm( ModelForm ):
     class Meta:
@@ -25,16 +24,16 @@ class InformeCampaniaForm( ModelForm ):
         fields = ['IdCampania']
 
 class InformeProveedorForm( ModelForm ):
-    class meta:
+    class Meta:
         model = InformeProveedor
         fields = ['NumProveedor']
 
 class InformeTributarioForm( ModelForm ):
-    class meta:
+    class Meta:
         model = InformeTributario
         fields = ['ImporteTributario']
 
 class InformePOSForm( ModelForm ):
-    class meta:
+    class Meta:
         model = InformePOS
         fields = ['CodigoPOS','BeneficiosPOS']

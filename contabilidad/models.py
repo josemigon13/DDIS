@@ -1,8 +1,8 @@
 from django.db import models
 from rrhh.models import Contrato
+from rrhh.models import OfertaEmpleo
 from marketing.models import CampaniaPublicitaria
 from logistica.models import Proveedor
-
 # Create your models here.
 
 class InformeCuentas(models.Model):
