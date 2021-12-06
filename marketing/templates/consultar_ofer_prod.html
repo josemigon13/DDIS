@@ -1,47 +1,55 @@
 {% extends 'main.html' %}
 
 {% block css %}
-<link rel="stylesheet" href="../../static/style.css">
+<link rel="stylesheet" href="../../../static/style.css">
 {% endblock css %}
 
 {% block content %}
 
+<center> <h1> Consulta de Oferta de Productos</h1> </center>
+{% if error_message_mostrar_tabs %}
+<br>
+<div class="alert alert-danger">
+    <center>{{ error_message_mostrar_tabs }}</div></center>
+</div>
+<br>
+{% endif%}
+{% if incluir_mostrar_tablas %}
+<br>
+<center>
+<table border>
+<tr align=center>
+    <th scope="col"> IdOfertaProd </th>
+    <th scope="col"> Nombre_OferProd </th>
+    <th scope="col"> ListaProductos </th>
+    <th scope="col"> Precio_OferProd </th>
+    <th scope="col"> FechaIni_OferProd </th>
+    <th scope="col"> FechaFin_OferProd </th>
+</tr>
+<tr align=center>
+    <td>{{ofer_prod_seleccionada.IdOfertaProd}}</td><td> {{ofer_prod_seleccionada.Nombre_OferProd}}</td>
+    <td>{{ofer_prod_seleccionada.ListaProductos}}</td><td> {{ofer_prod_seleccionada.Precio_OferProd}}</td>
+    <td>{{ofer_prod_seleccionada.FechaIni_OferProd.year}}/{{ofer_prod_seleccionada.FechaIni_OferProd.month}}/{{ofer_prod_seleccionada.FechaIni_OferProd.day}}</td>
+    <td>{{ofer_prod_seleccionada.FechaFin_OferProd.year}}/{{ofer_prod_seleccionada.FechaFin_OferProd.month}}/{{ofer_prod_seleccionada.FechaFin_OferProd.day}}</td>    
+</tr>
+</table>
+</center>
+<br>
+{% endif%}
+
 <form method="post">
     {% csrf_token %}
-
-    <!--
-    {% if error_message_mostrar_tabs %}
-        <br>
-        <div class="alert alert-danger">
-            <center>{{ error_message_mostrar_tabs }}</div></center>
-        </div>
-        
-    {% elif tablas_vacias %}
-        <br>
-        <div class="alert alert-info">
-            <center>Las tablas de la Base de Datos están vacías</div></center>
-        </div>
-    
-    {% endif%}
-    -->
-    
+    <div class="container">
+        {{ form }}
+        <button type="submit">Consultar Oferta de Productos seleccionada</button>   
+    </div>
     <center>
-        <h1> Lista de Almacenes </h1> 
-    <table border>
-    <tr align=center>
-        <th scope="col"> IdAlmacén </th>
-        <th scope="col"> Dirección </th>
-        <th scope="col"> Superficie </th>
-        <th scope="col"> FechaInicioAlquiler </th>
-        <th scope="col"> FechaFinAlquiler </th>
-    </tr>
-    {% for almacen in almacenes %}
-    <tr align=center>
-        <td>{{almacen.IdAlmacén}}</td><td>{{almacen.Dirección}}</td><td>{{almacen.Superficie}}</td><td>{{almacen.FechaInicioAlquiler}}</td><td>{{almacen.FechaFinAlquiler}}</td>
-    </tr>
-    {% endfor %}
-    </table>
-    </center>
 </form>
+
+    <div>
+        <a href="{% url 'marketing:menu_marketing' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+    </div>
+    </center>
+
 
 {% endblock content %}

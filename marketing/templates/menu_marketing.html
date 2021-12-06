@@ -1,15 +1,3 @@
-{% extends 'main.html' %}
-
-{% block css %}
-<link rel="stylesheet" href="../../static/style.css">
-{% endblock css %}
-
-{% block title %}
-<title> Menú Marketing </title>
-{% endblock title %}
-
-{% block content %}
-
 <center> <h1> Menú Marketing </h1> </center>
 <br>
 <center> <h3> Selecciona la acción a realizar:</h3> </center>
@@ -46,9 +34,14 @@
             Consultar Campaña Publicitaria
         </button>
     </div>
+    <div>
+        <button class="btn btn-secondary" id="consultar-tablas-marketing-btn" name="consultar-tablas-marketing-btn" type="submit">
+            Consultar Tablas del Área de Marketing
+        </button>
+    </div>
     <center>
         <div>
-            <a href="{% url 'menu' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+            <a href="{% url 'login_menu_pral:menu' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
         </div>
         </center>
     {% if error_message %}
@@ -58,5 +51,3 @@
     </div>
     {% endif %}
 </form> 
-
-{% endblock content %}

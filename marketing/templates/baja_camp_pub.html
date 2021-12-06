@@ -1,38 +1,40 @@
 {% extends 'main.html' %}
 
 {% block css %}
-<link rel="stylesheet" href="../../static/style.css">
+<link rel="stylesheet" href="../../../static/style.css">
 {% endblock css %}
 
 {% block content %}
 
-    <center> <h1> Baja de Lote de Productos</h1> </center>
+    <center> <h1> Baja de Campaña Publicitaria</h1> </center>
 
-    <form method="post">  
-        {% csrf_token %}
-        <div class="container">
-            {{ form.as_p }}
-            <button type="submit">Introducir Identificador del Lote</button>   
-        </div>
-    </form>  
-    <center>
-    <div>
-        <a href="{% url 'menu' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
-    </div>
-    </center>
     {% if error_message %}
     <br>
     <div class="alert alert-danger">
         <center>{{ error_message }}</div></center>
     </div>
+    <br>
     {% endif %}
-    <!--
     {% if success_message %}
     <br>
     <div class="alert alert-success">
         <center>{{ success_message }}</div></center>
     </div>
+    <br>
     {% endif %}
-    -->
+    
+    <form method="post">  
+        {% csrf_token %}
+        <div class="container">
+            {{ form }}
+            <button type="submit">Eliminar Campaña Publicitaria seleccionada</button>   
+        </div>
+    </form>  
+    <center>
+    <div>
+        <a href="{% url 'marketing:menu_marketing' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+    </div>
+    </center>
+   
 
 {% endblock content %}

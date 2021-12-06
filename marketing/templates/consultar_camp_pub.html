@@ -1,48 +1,56 @@
 {% extends 'main.html' %}
 
 {% block css %}
-<link rel="stylesheet" href="../../static/style.css">
+<link rel="stylesheet" href="../../../static/style.css">
 {% endblock css %}
 
 {% block content %}
 
-<form method="post">
-    {% csrf_token %}
+<center> <h1> Consulta de Campaña Publicitaria</h1> </center>
 
-    <!--
     {% if error_message_mostrar_tabs %}
         <br>
         <div class="alert alert-danger">
             <center>{{ error_message_mostrar_tabs }}</div></center>
         </div>
-        
-    {% elif tablas_vacias %}
         <br>
-        <div class="alert alert-info">
-            <center>Las tablas de la Base de Datos están vacías</div></center>
-        </div>
-    
     {% endif%}
-    -->
-    
-    <center>
-        <h1> Lista de Lotes de Productos </h1> 
-    <table border>
-    <tr align=center>
-        <th scope="col"> IdLote </th>
-        <th scope="col"> IdAlmacén </th>
-        <th scope="col"> Descripción </th>
-        <th scope="col"> Unidad </th>
-        <th scope="col"> Cantidad </th>
-        <th scope="col"> Coste </th>
-    </tr>
-    {% for lote in lotes %}
-    <tr align=center>
-        <td>{{lote.IdLote}}</td><td>{{lote.IdAlmacén}}</td><td>{{lote.Descripción}}</td><td>{{lote.Unidad}}</td><td>{{lote.Cantidad}}</td><td> {{lote.Coste}}</td>
-    </tr>
-    {% endfor %}
-    </table>
-    </center>
+    {% if incluir_mostrar_tablas %}
+        <br>
+        <center>
+        <table border>
+        <tr align=center>
+            <th scope="col"> IdCampaña </th>
+            <th scope="col"> Nombre_CampPub </th>
+            <th scope="col"> Descripcion_CampPub </th>
+            <th scope="col"> Precio_CampPub </th>
+            <th scope="col"> ListaMediosEmision </th>
+            <th scope="col"> FechaIni_CampPub </th>
+            <th scope="col"> FechaFin_CampPub </th>
+        </tr>
+        <tr align=center>
+            <td>{{camp_pub_seleccionada.IdCampaña}}</td><td> {{camp_pub_seleccionada.Nombre_CampPub}}</td>
+            <td>{{camp_pub_seleccionada.Descripcion_CampPub}}</td><td> {{camp_pub_seleccionada.Precio_CampPub}}</td>
+            <td>{{camp_pub_seleccionada.ListaMediosEmision}}</td>
+            <td>{{camp_pub_seleccionada.FechaIni_CampPub.year}}/{{camp_pub_seleccionada.FechaIni_CampPub.month}}/{{camp_pub_seleccionada.FechaIni_CampPub.day}}</td>
+            <td>{{camp_pub_seleccionada.FechaFin_CampPub.year}}/{{camp_pub_seleccionada.FechaFin_CampPub.month}}/{{camp_pub_seleccionada.FechaFin_CampPub.day}}</td>    
+        </tr>
+        </table>
+        </center>
+        <br>
+    {% endif%}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="container">
+        {{ form }}
+        <button type="submit">Consultar Campaña Publicitaria seleccionada</button>   
+    </div>    
 </form>
+    <center>
+    <div>
+        <a href="{% url 'marketing:menu_marketing' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+    </div>
+    </center>
 
 {% endblock content %}

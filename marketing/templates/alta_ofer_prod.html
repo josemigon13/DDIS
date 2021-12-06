@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 
 {% block css %}
-<link rel="stylesheet" href="../../static/style.css">
+<link rel="stylesheet" href="../../../static/style.css">
 {% endblock css %}
 
 {% block content %}
@@ -11,13 +11,13 @@
     <form method="post">  
         {% csrf_token %}
         <div class="container">
-            {{ form.as_p }}
+            {{ form }}
             <button type="submit">Introducir datos de la nueva oferta de productos </button>   
         </div>
     </form>  
     <center>
     <div>
-        <a href="{% url 'menu' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+        <a href="{% url 'marketing:menu_marketing' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
     </div>
     </center>
     {% if error_message %}

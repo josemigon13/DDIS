@@ -1,0 +1,37 @@
+    <center> <h1> Menú de opciones de Alta de Campaña Publicitaria </h1> </center>
+    <form method="post">  
+        {% csrf_token %}
+        <center>
+        <div>
+            <button class="btn btn-primary" id="opcion1-btn" name="opcion1-btn" type="submit">
+                Opción 1 - Añadir oferta de producto a la promoción de la campaña
+            </button>
+        </div>
+        <div>
+            <button class="btn btn-danger" id="opcion2-btn" name="opcion2-btn" type="submit">
+                Opción 2 - Eliminar todas las ofertas de producto asociadas a la campaña
+        </div>
+        <div>
+            <button class="btn btn-danger" id="opcion3-btn" name="opcion3-btn" type="submit">
+                Opción 3 - Cancelar alta de campaña
+            </button>
+        </div>
+        <div>
+            <button class="btn btn-success" id="opcion4-btn" name="opcion4-btn" type="submit">
+                Opción 4 - Finalizar alta de campaña
+            </button>
+        </div>
+        </center>
+        {% if error_message %}
+        <br>
+        <div class="alert alert-danger">
+            <center>{{ error_message }}</div></center>
+        </div>
+        {% endif %}
+        {% if success_message %}
+        <br>
+        <div class="alert alert-success">
+            <center>{{ success_message }}</div></center>
+        </div>
+        {% endif %}
+    </form> 

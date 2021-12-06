@@ -1,0 +1,30 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../../../../static/style.css">
+{% endblock css %}
+
+{% block content %}
+
+    <center> <h1> Añadir oferta de producto asociada a la promoción de la campaña a crear</h1> </center>
+
+    <form method="post">  
+        {% csrf_token %}
+        <div class="container">
+            {{ form }}
+            <button type="submit">Validar elección de oferta</button>   
+        </div>
+    </form>  
+    <center>
+    <div>
+        <a href="{% url 'marketing:opciones_alta_camp_pub' %}" class="btn btn-primary" id="volver-opciones-btn">Volver atrás</a>
+    </div>
+    <center>
+    {% if error_message %}
+    <br>
+    <div class="alert alert-danger">
+        <center>{{ error_message }}</div></center>
+    </div>
+    {% endif %}
+
+{% endblock content %}

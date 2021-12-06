@@ -1,0 +1,77 @@
+<form method="post">
+    {% csrf_token %}
+
+    {% if error_message_mostrar_tabs %}
+        <br>
+        <div class="alert alert-danger">
+            <center>{{ error_message_mostrar_tabs }}</div></center>
+        </div>
+        
+    {% elif tablas_vacias %}
+        <br>
+        <div class="alert alert-info">
+            <center>Las tablas de Marketing en la Base de Datos están vacías</div></center>
+        </div>
+    
+    {% endif%}
+    {% if incluir_mostrar_tablas %}
+        <center>
+        <h2>Tabla de CampañaPublicitaria</h2>
+        <table border>
+        <tr align=center>
+            <th scope="col"> IdCampaña </th>
+            <th scope="col"> Nombre_CampPub </th>
+            <th scope="col"> Descripcion_CampPub </th>
+            <th scope="col"> Precio_CampPub </th>
+            <th scope="col"> ListaMediosEmision </th>
+            <th scope="col"> FechaIni_CampPub </th>
+            <th scope="col"> FechaFin_CampPub </th>
+        </tr>
+        {% for tupla in camp_pubs %}
+        <tr align=center>
+            <td>{{tupla.IdCampaña}}</td><td> {{tupla.Nombre_CampPub}}</td>
+            <td>{{tupla.Descripcion_CampPub}}</td><td> {{tupla.Precio_CampPub}}</td>
+            <td>{{tupla.ListaMediosEmision}}</td>
+            <td>{{tupla.FechaIni_CampPub.year}}/{{tupla.FechaIni_CampPub.month}}/{{tupla.FechaIni_CampPub.day}}</td>
+            <td>{{tupla.FechaFin_CampPub.year}}/{{tupla.FechaFin_CampPub.month}}/{{tupla.FechaFin_CampPub.day}}</td>
+        </tr>
+        {% endfor %}
+        </table>
+
+        <br>
+        <h2>Tabla de OfertaProductos</h2>
+        <table border>
+        <tr align=center> 
+            <th scope="col"> IdOfertaProd </th>
+            <th scope="col"> Nombre_OferProd </th>
+            <th scope="col"> ListaProductos </th>
+            <th scope="col"> Precio_OferProd </th>
+            <th scope="col"> FechaIni_OferProd </th>
+            <th scope="col"> FechaFin_OferProd </th>
+        </tr>
+        {% for tupla in ofertas %}
+        <tr align=center>
+            <td>{{tupla.IdOfertaProd}}</td><td>{{tupla.Nombre_OferProd}}</td>
+            <td>{{tupla.ListaProductos}}</td><td>{{tupla.Precio_OferProd}}</td>
+            <td>{{tupla.FechaIni_OferProd.year}}/{{tupla.FechaIni_OferProd.month}}/{{tupla.FechaIni_OferProd.day}}</td>
+            <td>{{tupla.FechaFin_OferProd.year}}/{{tupla.FechaFin_OferProd.month}}/{{tupla.FechaFin_OferProd.day}}</td>
+        </tr>
+        {% endfor %}
+        </table>
+
+        <br>
+        <h2>Tabla Promociona</h2>
+        <table border>
+        <tr align=center>
+            <th scope="col">IdCampaña</th>
+            <th scope="col">IdOfertaProd</th>
+        </tr>
+        {% for tupla in promociona %}
+        <tr align=center>
+            <td>{{tupla.IdCampaña}}</td><td>{{tupla.IdOfertaProd}}</td>
+        </tr>
+        {% endfor %}
+        </table>
+        </center>
+    {% endif %}
+</form>
