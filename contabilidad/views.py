@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from .models import *
 from .forms import *
+from login_menu_pral.views import Conexion_BD
+from operator import itemgetter
 
 # Create your views here.
 
@@ -21,8 +22,8 @@ def menu_contabilidad(request):
         elif 'computar-impuestos-btn' in keys_request_POST:
             return HttpResponseRedirect('computar_impuestos')
 
-        elif 'computar-costeCampania-btn' in keys_request_POST:
-            return HttpResponseRedirect('computar_costeCampania')
+        elif 'computar-costeCampaña-btn' in keys_request_POST:
+            return HttpResponseRedirect('computar_costeCampaña')
         
         elif 'listar-informes-btn' in keys_request_POST:
             return HttpResponseRedirect('listar_informes')
@@ -31,144 +32,243 @@ def menu_contabilidad(request):
 
 def computar_salario(request):
     if request.method == 'POST' :
-        form1 = InformeForm(request.POST)
-        form2 = InformeSalarialForm(request.POST)
+        form1 = InformeCuentasForm(request.POST)
+        form2 = InformeSalarialEmpleadoForm(request.POST)
         if form1.is_valid() and form2.is_valid():
-            exit = True
-            DNIs = list(InformeSalarialEmpleado.objects.values_list('DNI', flat=True))
             try:
-                DNIs.index(list(InformeSalarialEmpleado.objects.filter(DNI = form2.cleaned_data["DNI"]).values_list('DNI', flat=True))[0])
-                IDs = list(InformeSalarialEmpleado.objects.filter(DNI = form2.cleaned_data["DNI"]).values_list('IdInforme', flat=True))
-                Fechas = []
-                for id in IDs:
-                    Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_Informe'))
-                try:
-                    Fechas.index(form1.cleaned_data["Fecha_Informe"])
-                    error_message = "ERROR: Ya existe un informe salarial para el\
-                    empleado en la fecha proporcionada en la BD"
-                    return render( request, "computar_salario.html" , {'form1':InformeForm(), 'form2':InformeSalarialForm(), 'error_message': error_message}) 
-                except:
-                    exit = False
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                    cursor.execute(f"""SELECT IdInforme FROM InformeSalarialEmpleado WHERE DNI='{str(form2.cleaned_data["DNI"])}'""")
+                    IdInforme = cursor.fetchall()
+                    cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{IdInforme}'""")
+                    Fecha_Informe = cursor.fetchall()
+                    if (form1.cleaned_data["Fecha_Informe"] in Fecha_Informe):
+                        error_message="ERROR: Ya existe un Informe Salarial para el empleado en la fecha proporcionada en la BD"
+                        return render(request,"computar_salario.html", {'form1':InformeCuentasForm(), 'form2':InformeSalarialEmpleadoForm(), 'error_message': error_message})
+                    
+                    else:
+                        cursor.execute("SAVEPOINT save_previa_computar_salario")
+                        cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
+                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
+                        cursor.execute(f"""INSERT INTO InformeSalarialEmpleado (IdInforme, DNI)
+                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        '{str(form2.cleaned_data["DNI"])}')""")
+                        return HttpResponseRedirect('../')
+                
             except:
-                exit = False
-              
-            if exit==False :
-                obj = InformeCuentas(IdInforme=form1.cleaned_data["IdInforme"], Fecha_Informe=form1.cleaned_data["Fecha_Informe"])
-                obj.save()
-                obj = InformeSalarialEmpleado(IdInforme=InformeCuentas.objects.get(IdInforme = form1.cleaned_data["IdInforme"]), DNI=form2.cleaned_data["DNI"])
-                obj.save()
-                return HttpResponseRedirect('../')
-    return render(request,"computar_salario.html",{'form1':InformeForm(), 'form2':InformeSalarialForm()})
-
-def computar_costeCampania(request):
-    if request.method == 'POST' :
-        form1 = InformeForm(request.POST)
-        form2 = InformeCampaniaForm(request.POST)
-        if form1.is_valid() and form2.is_valid():
-            IDsCampanias = list(InformeCampania.objects.values_list('IdCampania', flat=True))
-            try:
-                IDsCampanias.index(list(InformeCampania.objects.filter(IdCampania = form2.cleaned_data["IdCampania"]).values_list('IdCampania', flat=True))[0])
-                error_message = "ERROR: Ya existe un informe para la campaña publicitaria proporcionada en la BD"
-                return render( request, "computar_costeCampania.html" , {'form1':InformeForm(), 'form2':InformeCampaniaForm(), 'error_message': error_message})
-            except:
-                obj = InformeCuentas(IdInforme=form1.cleaned_data["IdInforme"], Fecha_Informe=form1.cleaned_data["Fecha_Informe"])
-                obj.save()
-                obj = InformeCampania(IdInforme=InformeCuentas.objects.get(IdInforme = form1.cleaned_data["IdInforme"]), IdCampania=form2.cleaned_data["IdCampania"])
-                obj.save()
-                return HttpResponseRedirect('../')
-    return render(request,"computar_costeCampania.html",{'form1':InformeForm(), 'form2':InformeCampaniaForm()})
+                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe Salarial. 
+                Comprueba que el DNI introducido esté asociado a algún empleado del sistema"""
+                return render(request,"computar_salario.html", {'form1':InformeCuentasForm(), 'form2':InformeSalarialEmpleadoForm(), 'error_message': error_message})
+        else:
+            error_message="""ERROR en alguno de los campos a rellenar del Informe Salarial"""
+            return render(request,"computar_salario.html", {'form1':InformeCuentasForm(), 'form2':InformeSalarialEmpleadoForm(), 'error_message': error_message}) 
+    return render(request,"computar_salario.html",{'form1':InformeCuentasForm(), 'form2':InformeSalarialEmpleadoForm()})
 
 def computar_pagoProveedor(request):
     if request.method == 'POST' :
-        form1 = InformeForm(request.POST)
+        form1 = InformeCuentasForm(request.POST)
         form2 = InformeProveedorForm(request.POST)
         if form1.is_valid() and form2.is_valid():
-            exit = True
-            Proveedores = list(InformeProveedor.objects.values_list('NumProveedor', flat=True))
             try:
-                Proveedores.index(list(InformeProveedor.objects.filter(NumProveedor = form2.cleaned_data["NumProveedor"]).values_list('NumProveedor', flat=True))[0])
-                IDs = list(InformeProveedor.objects.filter(NumProveedor = form2.cleaned_data["NumProveedor"]).values_list('IdInforme', flat=True))
-                Fechas = []
-                for id in IDs:
-                    Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_Informe'))
-                try:
-                    Fechas.index(form1.cleaned_data["Fecha_Informe"])
-                    error_message = "ERROR: Ya existe un informe de proveedor para\
-                    la fecha proporcionada en la BD"
-                    return render( request, "computar_pagoProveedor.html" , {'form1':InformeForm(), 'form2':InformeProveedorForm(), 'error_message': error_message})
-                except:
-                    exit = False
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                    cursor.execute(f"""SELECT IdInforme FROM InformeProveedor WHERE NumProveedor='{str(form2.cleaned_data["NumProveedor"])}'""")
+                    IdInforme = cursor.fetchall()
+                    cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{IdInforme}'""")
+                    Fecha_Informe = cursor.fetchall()
+                    if (form1.cleaned_data["Fecha_Informe"] in Fecha_Informe):
+                        error_message="ERROR: Ya existe un Informe de Proveedor para el proveedor en la fecha proporcionada en la BD"
+                        return render(request,"computar_pagoProveedor.html", {'form1':InformeCuentasForm(), 'form2':InformeProveedorForm(), 'error_message': error_message})
+                    else:        
+                        cursor.execute("SAVEPOINT save_previa_computar_pagoProveedor")
+                        cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
+                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
+                        cursor.execute(f"""INSERT INTO InformeProveedor (IdInforme, NumProveedor)
+                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        '{str(form2.cleaned_data["NumProveedor"])}')""")
+                        return HttpResponseRedirect('../')
+                
             except:
-                exit = False
-            
-            if exit == False:
-                obj = InformeCuentas(IdInforme=form1.cleaned_data["IdInforme"], Fecha_Informe=form1.cleaned_data["Fecha_Informe"])
-                obj.save()
-                obj = InformeProveedor(IdInforme=InformeCuentas.objects.get(IdInforme = form1.cleaned_data["IdInforme"]), NumProveedor=form2.cleaned_data["NumProveedor"])
-                obj.save()
-                return HttpResponseRedirect('../')
-    return render(request,"computar_pagoProveedor.html",{'form1':InformeForm(), 'form2':InformeProveedorForm()})
+                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe de Proveedor. 
+                Comprueba que el Número de Proveedor introducido esté asociado a algún proveedor del sistema"""
+                return render(request,"computar_pagoProveedor.html", {'form1':InformeCuentasForm(), 'form2':InformeProveedorForm(), 'error_message': error_message})
+        else:
+            error_message="""ERROR en alguno de los campos a rellenar del Informe de Proveedor"""
+            return render(request,"computar_pagoProveedor.html", {'form1':InformeCuentasForm(), 'form2':InformeProveedorForm(), 'error_message': error_message})
+    return render(request,"computar_pagoProveedor.html",{'form1':InformeCuentasForm(), 'form2':InformeProveedorForm()})
+
+def computar_costeCampaña(request):
+    if request.method == 'POST' :
+        form1 = InformeCuentasForm(request.POST)
+        form2 = InformeCampañaForm(request.POST)
+        if form1.is_valid() and form2.is_valid():
+            try:
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                    cursor.execute(f"""SELECT IdCampaña FROM InformeCuentas""")
+                    IdCampaña = cursor.fetchall()
+                    if (form2.cleaned_data["IdCampaña"] in IdCampaña):
+                        error_message="ERROR: Ya existe un Informe de Campaña para la campaña publicitaria proporcionada en la BD"
+                        return render(request,"computar_costeCampaña.html", {'form1':InformeCuentasForm(), 'form2':InformeCampañaForm(), 'error_message': error_message})
+                    else:
+                        cursor.execute("SAVEPOINT save_previa_computar_costeCampaña")
+                        cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
+                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
+                        cursor.execute(f"""INSERT INTO InformeCampaña (IdInforme, IdCampaña)
+                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        '{str(form2.cleaned_data["IdCampaña"])}')""")
+                        return HttpResponseRedirect('../')
+                
+            except:
+                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe de Campaña Publicitaria.
+                Comprueba que el Identificador de Campaña introducido esté asociado a alguna campaña publicitaria del sistema"""
+                return render(request,"computar_costeCampaña.html", {'form1':InformeCuentasForm(), 'form2':InformeCampañaForm(), 'error_message': error_message})
+        else:
+            error_message="ERROR en alguno de los campos a rellenar del Informe de Campaña Publicitaria"
+            return render(request,"computar_costeCampaña.html", {'form1':InformeCuentasForm(), 'form2':InformeCampañaForm(), 'error_message': error_message}) 
+    return render(request,"computar_costeCampaña.html",{'form1':InformeCuentasForm(), 'form2':InformeCampañaForm()})
 
 def computar_impuestos(request):
     if request.method == 'POST' :
-        form1 = InformeForm(request.POST)
+        form1 = InformeCuentasForm(request.POST)
         form2 = InformeTributarioForm(request.POST)
         if form1.is_valid() and form2.is_valid():
-            IDs = list(InformeTributario.objects.values_list('IdInforme', flat=True))
-            Fechas = []
-            for id in IDs:
-                Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_Informe'))
             try:
-                Fechas.index(form1.cleaned_data["Fecha_Informe"])
-                error_message="ERROR: Ya existe un informe tributario para la fecha proporcionada en la BD"
-                return render( request, "computar_impuestos.html" , {'form1':InformeForm(), 'form2':InformeTributarioForm(), 'error_message': error_message})
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                    cursor.execute(f"""SELECT IdInforme FROM InformeTributario""")
+                    IdInforme = cursor.fetchall()
+                    cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{IdInforme}'""")
+                    Fecha_Informe = cursor.fetchall()
+                    if (form1.cleaned_data["Fecha_Informe"] in Fecha_Informe):
+                        error_message="ERROR: Ya existe un Informe Tributario para la fecha proporcionada en la BD"
+                        return render(request,"computar_impuestos.html", {'form1':InformeCuentasForm(), 'form2':InformeTributarioForm(), 'error_message': error_message})
+                    
+                    else:
+                        cursor.execute("SAVEPOINT save_previa_computar_impuestos")
+                        cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
+                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
+                        cursor.execute(f"""INSERT INTO InformeTributario (IdInforme, ImporteTributario)
+                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        '{str(form2.cleaned_data["ImporteTributario"])}')""")
+                        return HttpResponseRedirect('../')
+                
             except:
-                obj = InformeCuentas(IdInforme=form1.cleaned_data["IdInforme"], Fecha_Informe=form1.cleaned_data["Fecha_Informe"])
-                obj.save()
-                obj = InformeTributario(IdInforme=InformeCuentas.objects.get(IdInforme = form1.cleaned_data["IdInforme"]), ImporteTributario=form2.cleaned_data["ImporteTributario"])
-                obj.save()
-                return HttpResponseRedirect('../')
-    return render(request,"computar_impuestos.html",{'form1':InformeForm(), 'form2':InformeTributarioForm()})
+                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe Tributario"""
+                return render(request,"computar_impuestos.html", {'form1':InformeCuentasForm(), 'form2':InformeTributarioForm(), 'error_message': error_message})
+        else:
+            error_message="ERROR en alguno de los campos a rellenar del Informe Tributario"
+            return render(request,"computar_impuestos.html", {'form1':InformeCuentasForm(), 'form2':InformeTributarioForm(), 'error_message': error_message}) 
+    return render(request,"computar_impuestos.html",{'form1':InformeCuentasForm(), 'form2':InformeTributarioForm()})
 
 def computar_beneficiosPOS(request):
     if request.method == 'POST' :
-        form1 = InformeForm(request.POST)
-        form2 = InformePOSForm(request.POST)
+        form1 = InformeCuentasForm(request.POST)
+        form2 = InformeTributarioForm(request.POST)
         if form1.is_valid() and form2.is_valid():
-            exit = True
-            IDs = list(InformePOS.objects.values_list('CodigoPOS', flat=True))
             try:
-                IDs.index(form2.cleaned_data["CodigoPOS"])
-                IDs = list(InformePOS.objects.filter(CodigoPOS = form2.cleaned_data["CodigoPOS"]).values_list('IdInforme', flat=True))
-                Fechas = []
-                for id in IDs:
-                    Fechas.append(getattr(InformeCuentas.objects.get(IdInforme = id), 'Fecha_Informe'))
-                try:
-                    Fechas.index(form1.cleaned_data["Fecha_Informe"])
-                    error_message = "ERROR: Ya existe un informe para el punto de venta en\
-                    la fecha proporcionada en la BD"
-                    return render( request, "computar_beneficiosPOS.html" , {'form1':InformeForm(), 'form2':InformePOSForm(), 'error_message': error_message})
-                except:
-                    exit = False
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                    cursor.execute(f"""SELECT IdInforme FROM InformePOS WHERE CodigoPOS = '{str(form2.cleaned_data["CodigoPOS"])}'""")
+                    IdInforme = cursor.fetchal()
+                    cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{IdInforme}'""")
+                    Fecha_Informe = cursor.fetchall()
+                    if (form1.cleaned_data["Fecha_Informe"] in Fecha_Informe):
+                        error_message="ERROR: Ya existe un Informe de Punto de Venta para la fecha proporcionada en la BD"
+                        return render(request,"computar_beneficiosPOS.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'error_message': error_message})
+                    
+                    else:
+                        cursor.execute("SAVEPOINT save_previa_computar_benefeciosPOS")
+                        cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
+                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
+                        cursor.execute(f"""INSERT INTO InformeTributario (IdInforme, BeneficiosPOS, CodigoPOS)
+                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        '{str(form2.cleaned_data["BeneficiosPOS"])}',
+                                        '{str(form2.cleaned_data["CodigoPOS"])}')""")
+                        return HttpResponseRedirect('../')
+                
             except:
-                exit = False
-            
-            if exit == False:
-                obj = InformeCuentas(IdInforme=form1.cleaned_data["IdInforme"], Fecha_Informe=form1.cleaned_data["Fecha_Informe"])
-                obj.save()
-                obj = InformePOS(IdInforme=InformeCuentas.objects.get(IdInforme = form1.cleaned_data["IdInforme"]), BeneficiosPOS=form2.cleaned_data["BeneficiosPOS"], CodigoPOS=form2.cleaned_data["CodigoPOS"])
-                obj.save()
-                return HttpResponseRedirect('../')
-    return render(request,"computar_beneficiosPOS.html",{'form1':InformeForm(), 'form2':InformePOSForm()})
+                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe de Punto de Venta."""
+                return render(request,"computar_beneficiosPOS.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'error_message': error_message})
+        else:
+            error_message="ERROR en alguno de los campos a rellenar del Informe de Punto de Venta"
+            return render(request,"computar_salario.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'error_message': error_message}) 
+    return render(request,"computar_beneficiosPOS.html",{'form1':InformeCuentasForm(), 'form2':InformePOSForm()})
 
-def listar_informes(request) :
-    informe_cuentas = InformeCuentas.objects.all()
-    informe_salarial = InformeSalarialEmpleado.objects.all()
-    informe_tributario = InformeTributario.objects.all()
-    informe_POS = InformePOS.objects.all()
-    informe_proveedor = InformeProveedor.objects.all()
-    informe_campania = InformeCampania.objects.all()
-    return render(request,"listar_informes.html",{ 'informe_cuentas':informe_cuentas,
-    'informe_salarial':informe_salarial, 'informe_tributario':informe_tributario,
-    'informe_POS':informe_POS, 'informe_proveedor':informe_proveedor,
-    'informe_campania': informe_campania })
+def listar_informes(request):
+    try:
+        with Conexion_BD().get_conexion_BD().cursor() as cursor:
+            inf_cuentas, inf_salarial, inf_POS, inf_campaña, inf_pro, inf_trib = [], [], [], [], [], [] # inicializar como listas vacías, por si están vacías las tablas en la BD
+
+            # Obtención en lista de todos los atributos de la tabla Informe de Cuentas para su representación como tabla en html
+            cursor.execute("SELECT * FROM InformeCuentas")
+            inf_cuentas = [  ( fila[0], 
+                        {'IdInforme':fila[0], 'Fecha_Informe':fila[1] }) for fila in cursor.fetchall()]
+            # se ordena según el primer ítem del par (identificador/número de informe)
+            inf_cuentas_sorted = sorted(inf_cuentas, key=itemgetter(0))
+            # El conjunto de diccionarios ("de tuplas de la tabla") ya ordenados se obtiene, quedándonos con el
+            # 2º ítem de cada par de la lista anterior (se añadió el 1er ítem del par para la ordenación)
+            inf_cuentas = [ inf_cuentas_sorted[i][1] for i in range(0,len(inf_cuentas_sorted))]
+
+            # Obtención en lista de todos los atributos de la tabla Informe Salarial para su representación como tabla en html
+            cursor.execute("SELECT * FROM InformeSalarialEmpleado")
+            inf_salarial = [  ( fila[0], 
+                        {'IdInforme':fila[0], 'DNI':fila[1] }) for fila in cursor.fetchall()]
+            # se ordena según el primer ítem del par (identificador/número de informe)
+            inf_salarial_sorted = sorted(inf_salarial, key=itemgetter(0))
+            # El conjunto de diccionarios ("de tuplas de la tabla") ya ordenados se obtiene, quedándonos con el
+            # 2º ítem de cada par de la lista anterior (se añadió el 1er ítem del par para la ordenación)
+            inf_salarial = [ inf_salarial_sorted[i][1] for i in range(0,len(inf_salarial_sorted))]
+
+            # Obtención en lista de todos los atributos de la tabla Informe de Campaña para su representación como tabla en html
+            cursor.execute("SELECT * FROM InformeCampaña")
+            inf_campaña = [  ( fila[0], 
+                        {'IdInforme':fila[0], 'IdCampaña':fila[1] }) for fila in cursor.fetchall()]
+            # se ordena según el primer ítem del par (identificador/número de informe)
+            inf_campaña_sorted = sorted(inf_campaña, key=itemgetter(0))
+            # El conjunto de diccionarios ("de tuplas de la tabla") ya ordenados se obtiene, quedándonos con el
+            # 2º ítem de cada par de la lista anterior (se añadió el 1er ítem del par para la ordenación)
+            inf_campaña = [ inf_campaña_sorted[i][1] for i in range(0,len(inf_campaña_sorted))]
+
+            # Obtención en lista de todos los atributos de la tabla Informe de Proveedor para su representación como tabla en html
+            cursor.execute("SELECT * FROM InformeProveedor")
+            inf_pro = [  ( fila[0], 
+                    {'IdInforme':fila[0], 'NumProveedor':fila[1] }) for fila in cursor.fetchall()]
+            # se ordena según el primer ítem del par (identificador/número de informe)
+            inf_pro_sorted = sorted(inf_pro, key=itemgetter(0))
+            # El conjunto de diccionarios ("de tuplas de la tabla") ya ordenados se obtiene, quedándonos con el
+            # 2º ítem de cada par de la lista anterior (se añadió el 1er ítem del par para la ordenación)
+            inf_pro = [ inf_pro_sorted[i][1] for i in range(0,len(inf_pro_sorted))]
+
+            # Obtención en lista de todos los atributos de la tabla Informe Tributario para su representación como tabla en html
+            cursor.execute("SELECT * FROM InformeTributario")
+            inf_trib = [  ( fila[0], 
+                    {'IdInforme':fila[0], 'ImporteTributario':fila[1] }) for fila in cursor.fetchall()]
+            # se ordena según el primer ítem del par (identificador/número de informe)
+            inf_trib_sorted = sorted(inf_trib, key=itemgetter(0))
+            # El conjunto de diccionarios ("de tuplas de la tabla") ya ordenados se obtiene, quedándonos con el
+            # 2º ítem de cada par de la lista anterior (se añadió el 1er ítem del par para la ordenación)
+            inf_trib = [ inf_trib_sorted[i][1] for i in range(0,len(inf_trib_sorted))]
+
+            # Obtención en lista de todos los atributos de la tabla Informe POS para su representación como tabla en html
+            cursor.execute("SELECT * FROM InformePOS")
+            inf_POS = [  ( fila[0], 
+                    {'IdInforme':fila[0], 'BeneficiosPOS':fila[1], 'CodigoPOS':fila[2] }) for fila in cursor.fetchall()]
+            # se ordena según el primer ítem del par (identificador/número de informe)
+            inf_POS_sorted = sorted(inf_POS, key=itemgetter(0))
+            # El conjunto de diccionarios ("de tuplas de la tabla") ya ordenados se obtiene, quedándonos con el
+            # 2º ítem de cada par de la lista anterior (se añadió el 1er ítem del par para la ordenación)
+            inf_POS = [ inf_POS_sorted[i][1] for i in range(0,len(inf_POS_sorted))]
+        
+        tablas_vacias = (len(inf_cuentas) == 0)
+
+        return render( request, "listar_informes.html", 
+                        { 'inf_cuentas':inf_cuentas,
+                        'inf_salarial':inf_salarial, 'inf_trib':inf_trib,
+                        'inf_POS':inf_POS, 'inf_pro':inf_pro,
+                        'inf_campaña': inf_campaña,
+                        'tablas_vacias':tablas_vacias })
+
+    except:
+        error_message_mostrar_tabs="ERROR: Las tablas no se han podido mostrar."
+        return render( request, "listar_informes.html", {"error_message_mostrar_tabs": error_message_mostrar_tabs})
