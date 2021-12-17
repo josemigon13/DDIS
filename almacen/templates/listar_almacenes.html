@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 
 {% block css %}
-<link rel="stylesheet" href="../../static/style.css">
+<link rel="stylesheet" href="../../../static/style.css">
 {% endblock css %}
 
 {% block content %}
@@ -31,7 +31,7 @@
     <tr align=center>
         <th scope="col"> IdAlmacén </th>
         <th scope="col"> Dirección </th>
-        <th scope="col"> Superficie </th>
+        <th scope="col"> Superficie (metros cuadrados)</th>
         <th scope="col"> FechaInicioAlquiler </th>
         <th scope="col"> FechaFinAlquiler </th>
     </tr>
@@ -43,5 +43,10 @@
     </table>
     </center>
 </form>
+<center>
+    <div>
+        <a href="{% url 'almacen:menu_almacen' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+    </div>
+</center>
 
 {% endblock content %}

@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 
 {% block css %}
-<link rel="stylesheet" href="../../static/style.css">
+<link rel="stylesheet" href="../../../static/style.css">
 {% endblock css %}
 
 {% block content %}
@@ -44,5 +44,10 @@
     </table>
     </center>
 </form>
+<center>
+    <div>
+        <a href="{% url 'almacen:menu_almacen' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+    </div>
+</center>
 
 {% endblock content %}
