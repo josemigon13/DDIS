@@ -1,0 +1,42 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../../static/style.css">
+{% endblock css %}
+
+{% block title %}
+<title> Menu de dar de Alta Oferta de Empleo </title>
+{% endblock title %}
+
+{% block content %}
+
+    <form method="post">  
+        {% csrf_token %}
+        <div class="container">
+            {{ form }}
+            <button type="submit">Dar de alta la oferta de empleo</button>   
+        </div>
+    </form>  
+
+    <center>
+    <div>
+        <a href="{% url 'rrhh:menu_rrhh' %}" class="btn btn-secondary" id="volver-menu-rrhh-btn">Volver atrás</a>
+    </div>
+    </center>
+
+    {% if error_message %}
+    <br>
+    <div class="alert alert-danger">
+        <center>{{ error_message }}</div></center>
+    </div>
+    <br>
+    {% endif %}
+    {% if success_message %}
+    <br>
+    <div class="alert alert-success">
+        <center>{{ success_message }}</div></center>
+    </div>
+    <br>
+    {% endif %}
+
+{% endblock content %}

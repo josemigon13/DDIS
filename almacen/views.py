@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.urls.base import is_valid_path
 from .models import *
 from .forms import *
-from login_menu_pral.views import conexion_BD
+from login_menu_pral.views import Conexion_BD
 import cx_Oracle
 
 # Create your views here.

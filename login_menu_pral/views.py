@@ -75,8 +75,7 @@ def menu(request):
         elif 'marketing-btn' in keys_request_POST:
             return HttpResponseRedirect("marketing")
         elif 'rrhh-btn' in keys_request_POST:
-            pass
-            # return HttpResponseRedirect("menu/rrhh")
+            return HttpResponseRedirect("rrhh")
         elif 'cerrar-sesion-bd-app-btn' in keys_request_POST:
             return cerrar_sesion_bd_app()
     
