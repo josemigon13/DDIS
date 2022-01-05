@@ -27,6 +27,11 @@
     <div class="alert alert-danger">
         <center>{{ error_message }}</div></center>
     </div>
+    {% elif message %}
+    <br>
+    <div class="alert alert-success">
+        <center>{{ message }}</div></center>
+    </div>
     {% endif %}
 
 {% endblock content %}

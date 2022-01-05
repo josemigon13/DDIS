@@ -36,8 +36,8 @@ BEGIN
     FETCH cInformeEmpleado INTO Inf_empleado;
     EXIT WHEN Inf_empleado.IdInforme = IdInforme;
     END LOOP;
-    DBMS_OUTPUT.PUT_LINE('Se ha creado un nuevo informe con ID ' || IdInforme || 
-    ', para el empleado con DNI ' || Inf_empleado.DNI || ' en la fecha ' || Inf_cuentas.Fecha_Informe);
+    DBMS_OUTPUT.PUT_LINE('Nuevo informe salarial insertado: { IdInforme:' || IdInforme ||
+    ',  DNI:' || Inf_empleado.DNI || ', Fecha_Informe:' || Inf_cuentas.Fecha_Informe || ' }');
     CLOSE cInformeEmpleado;
     CLOSE cInforme;
 END;
@@ -58,8 +58,8 @@ BEGIN
     FETCH cInformeProveedor INTO Inf_pro;
     EXIT WHEN Inf_pro.IdInforme = IdInforme;
     END LOOP;
-    DBMS_OUTPUT.PUT_LINE('Se ha creado un nuevo informe con ID ' || IdInforme || 
-    ', para el proveedor con Nº de proveedor ' || Inf_pro.NumProveedor || ' en la fecha ' || Inf_cuentas.Fecha_Informe);
+    DBMS_OUTPUT.PUT_LINE('Nuevo informe de proveedor insertado: { IdInforme:' || IdInforme ||
+    ', NumProveedor:' || Inf_pro.NumProveedor || ', Fecha_Informe:' || Inf_cuentas.Fecha_Informe || ' }');
     CLOSE cInformeProveedor;
     CLOSE cInforme;
 END;
@@ -80,8 +80,8 @@ BEGIN
     FETCH cInformeCampaña INTO Inf_Campaña;
     EXIT WHEN Inf_Campaña.IdInforme = IdInforme;
     END LOOP;
-    DBMS_OUTPUT.PUT_LINE('Se ha creado un nuevo informe con ID ' || IdInforme || 
-    ', para la campaña con ID ' || Inf_Campaña.IdCampaña || ' en la fecha ' || Inf_cuentas.Fecha_Informe);
+    DBMS_OUTPUT.PUT_LINE('Nuevo informe de campaña insertado: { IdInforme:' || IdInforme ||
+    ', IdCampaña:' || Inf_Campaña.IdCampaña || ', Fecha_Informe:' || Inf_cuentas.Fecha_Informe || ' }');
     CLOSE cInformeCampaña;
     CLOSE cInforme;
 END;
@@ -102,8 +102,9 @@ BEGIN
     FETCH cInformePOS INTO Inf_POS;
     EXIT WHEN Inf_POS.IdInforme = IdInforme;
     END LOOP;
-    DBMS_OUTPUT.PUT_LINE('Se ha creado un nuevo informe con ID ' || IdInforme || 
-    ', para el POS con código ' || Inf_POS.CodigoPOS || ' en la fecha ' || Inf_cuentas.Fecha_Informe);
+    DBMS_OUTPUT.PUT_LINE('Nuevo informe POS insertado: { IdInforme:' || IdInforme ||
+    ', CodigoPOS:' || Inf_POS.CodigoPOS || ', BeneficiosPOS:' || Inf_POS.BeneficiosPOS || 
+    ', Fecha_Informe:' || Inf_cuentas.Fecha_Informe || ' }');
     CLOSE cInformePOS;
     CLOSE cInforme;
 END;
@@ -124,8 +125,8 @@ BEGIN
     FETCH cInformeTRIB INTO Inf_TRIB;
     EXIT WHEN Inf_TRIB.IdInforme = IdInforme;
     END LOOP;
-    DBMS_OUTPUT.PUT_LINE('Se ha creado un nuevo informe tributario con ID ' || IdInforme || 
-    ' e importe equivalente a ' || Inf_TRIB.ImporteTributario || ' en la fecha ' || Inf_cuentas.Fecha_Informe);
+    DBMS_OUTPUT.PUT_LINE('Nuevo informe tributario insertado: { IdInforme:' || IdInforme || 
+    ',  ImporteTributario:' || Inf_TRIB.ImporteTributario || ', Fecha_Informe:' || Inf_cuentas.Fecha_Informe || ' }');
     CLOSE cInformeTRIB;
     CLOSE cInforme;
 END;

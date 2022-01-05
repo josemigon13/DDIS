@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from .forms import *
 from login_menu_pral.views import Conexion_BD
 from operator import itemgetter
+import cx_Oracle
 
 def menu_contabilidad(request):
     if request.method == 'POST':
@@ -62,10 +63,17 @@ def computar_salario(request):
                             cursor.execute(f"""INSERT INTO InformeSalarialEmpleado (IdInforme, DNI)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["DNI"]}')""")
-                            print("hola1")
+                            cursor.callproc("dbms_output.enable")
                             cursor.execute(f"""BEGIN inf_salarial('{form1.cleaned_data["IdInforme"]}'); END;""")
+                            statusVar = cursor.var(cx_Oracle.NUMBER)
+                            lineVar = cursor.var(cx_Oracle.STRING)
+                            while True:
+                                cursor.callproc("dbms_output.get_line", (lineVar, statusVar))
+                                if statusVar.getvalue() != 0:
+                                    break
+                                message = lineVar.getvalue()
                             cursor.execute("""COMMIT""")
-                            return HttpResponseRedirect('../') 
+                            return render(request,"computar_salario.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'message': message}) 
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_trabajador""")
                             raise Exception()
@@ -116,9 +124,17 @@ def computar_pagoProveedor(request):
                             cursor.execute(f"""INSERT INTO InformeProveedor (IdInforme, NumProveedor)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["NumProveedor"]}')""")
+                            cursor.callproc("dbms_output.enable")
                             cursor.execute(f"""BEGIN inf_proveedor('{form1.cleaned_data["IdInforme"]}'); END;""")
+                            statusVar = cursor.var(cx_Oracle.NUMBER)
+                            lineVar = cursor.var(cx_Oracle.STRING)
+                            while True:
+                                cursor.callproc("dbms_output.get_line", (lineVar, statusVar))
+                                if statusVar.getvalue() != 0:
+                                    break
+                                message = lineVar.getvalue()
                             cursor.execute("""COMMIT""")
-                            return HttpResponseRedirect('../')
+                            return render(request,"computar_pagoProveedor.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'message': message})
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_pagoProveedor""")
                             raise Exception()    
@@ -154,9 +170,17 @@ def computar_costeCampaña(request):
                             cursor.execute(f"""INSERT INTO InformeCampaña (IdInforme, IdCampaña)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["IdCampaña"]}')""")
+                            cursor.callproc("dbms_output.enable")
                             cursor.execute(f"""BEGIN inf_campaña('{form1.cleaned_data["IdInforme"]}'); END;""")
+                            statusVar = cursor.var(cx_Oracle.NUMBER)
+                            lineVar = cursor.var(cx_Oracle.STRING)
+                            while True:
+                                cursor.callproc("dbms_output.get_line", (lineVar, statusVar))
+                                if statusVar.getvalue() != 0:
+                                    break
+                                message = lineVar.getvalue()
                             cursor.execute("""COMMIT""")
-                            return HttpResponseRedirect('../')
+                            return render(request,"computar_costeCampaña.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'message': message})
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_costeCampaña""")
                             raise Exception()        
@@ -207,9 +231,17 @@ def computar_impuestos(request):
                             cursor.execute(f"""INSERT INTO InformeTributario (IdInforme, ImporteTributario)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["ImporteTributario"]}')""")
+                            cursor.callproc("dbms_output.enable")
                             cursor.execute(f"""BEGIN inf_TRIB('{form1.cleaned_data["IdInforme"]}'); END;""")
+                            statusVar = cursor.var(cx_Oracle.NUMBER)
+                            lineVar = cursor.var(cx_Oracle.STRING)
+                            while True:
+                                cursor.callproc("dbms_output.get_line", (lineVar, statusVar))
+                                if statusVar.getvalue() != 0:
+                                    break
+                                message = lineVar.getvalue()
                             cursor.execute("""COMMIT""")
-                            return HttpResponseRedirect('../')
+                            return render(request,"computar_impuestos.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'message': message})
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_impuestos""")
                             raise Exception()
@@ -261,9 +293,17 @@ def computar_beneficiosPOS(request):
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["BeneficiosPOS"]}',
                                             '{form2.cleaned_data["CodigoPOS"]}')""")
+                            cursor.callproc("dbms_output.enable")
                             cursor.execute(f"""BEGIN inf_pos('{form1.cleaned_data["IdInforme"]}'); END;""")
+                            statusVar = cursor.var(cx_Oracle.NUMBER)
+                            lineVar = cursor.var(cx_Oracle.STRING)
+                            while True:
+                                cursor.callproc("dbms_output.get_line", (lineVar, statusVar))
+                                if statusVar.getvalue() != 0:
+                                    break
+                                message = lineVar.getvalue()
                             cursor.execute("""COMMIT""")
-                            return HttpResponseRedirect('../')
+                            return render(request,"computar_beneficiosPOS.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'message': message})
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_pos""")
                             raise Exception()    
