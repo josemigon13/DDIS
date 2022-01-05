@@ -34,6 +34,7 @@ CREATE TABLE InformeTributario(
 CREATE TABLE InformePOS(
     IdInforme INT NOT NULL,
     BeneficiosPOS FLOAT NOT NULL,
+    CodigoPOS INT NOT NULL,
     FOREIGN KEY (IdInforme) REFERENCES InformeCuentas(IdInforme)
 );
 

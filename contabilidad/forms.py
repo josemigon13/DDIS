@@ -2,8 +2,7 @@ from django import forms
 import datetime
 
 class InformeCuentasForm(forms.Form):
-    IdInforme = forms.CharField(max_length=10,
-                                label="Identificador de Informe", 
+    IdInforme = forms.IntegerField(label="Identificador de Informe", 
                                 widget=forms.TextInput(attrs={'placeholder': "Introduce identificador de informe"}))
     DATE_SELECTION = []
     for year in range(1999, (datetime.datetime.now().year+1)):
@@ -14,7 +13,7 @@ class InformeCuentasForm(forms.Form):
 class InformeSalarialEmpleadoForm(forms.Form):
     DNI = forms.CharField(max_length=10,
                                 label="DNI de trabajador", 
-                                widget=forms.TextInput(attrs={'placeholder': "Introduce DNI del trabajador"}))
+                                widget=forms.TextInput(attrs={'placeholder': "Introduce DNI de trabajador"}))
 
 class InformeCampañaForm(forms.Form):
     IdCampaña = forms.CharField( max_length=10,
@@ -22,8 +21,8 @@ class InformeCampañaForm(forms.Form):
                                  widget=forms.TextInput(attrs={'placeholder': "Introduce identificador de campaña"}))
 
 class InformeProveedorForm(forms.Form):
-    NumProveedor = forms.IntegerField(label="Numero de proveedor", 
-                                widget=forms.TextInput(attrs={'placeholder': "Introduce Numero de Proveedor"}))
+    NumProveedor = forms.IntegerField(label="Número de proveedor", 
+                                widget=forms.TextInput(attrs={'placeholder': "Introduce Número de Proveedor"}))
 
 class InformeTributarioForm(forms.Form):
     ImporteTributario = forms.FloatField(label="Importe tributario", 
@@ -32,6 +31,5 @@ class InformeTributarioForm(forms.Form):
 class InformePOSForm(forms.Form):
     BeneficiosPOS = forms.FloatField(label="Beneficios POS", 
                                 widget=forms.TextInput(attrs={'placeholder': "Introduce cantidad"}))
-    CodigoPOS = forms.CharField(max_length=10,
-                                label="Codigo POS", 
-                                widget=forms.TextInput(attrs={'placeholder': "Introduce codigo POS"}))
+    CodigoPOS = forms.IntegerField(label="Código POS", 
+                                widget=forms.TextInput(attrs={'placeholder': "Introduce código POS"}))

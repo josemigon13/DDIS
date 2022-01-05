@@ -4,27 +4,20 @@ from .forms import *
 from login_menu_pral.views import Conexion_BD
 from operator import itemgetter
 
-# Create your views here.
-
 def menu_contabilidad(request):
     if request.method == 'POST':
         keys_request_POST = request.POST.keys()
 
         if 'computar-salario-btn' in keys_request_POST:
             return HttpResponseRedirect('computar_salario')
-
         elif 'computar-pagoProveedor-btn' in keys_request_POST:
             return HttpResponseRedirect('computar_pagoProveedor')
-
         elif 'computar-beneficiosPOS-btn' in keys_request_POST:
             return HttpResponseRedirect('computar_beneficiosPOS')
-
         elif 'computar-impuestos-btn' in keys_request_POST:
             return HttpResponseRedirect('computar_impuestos')
-
         elif 'computar-costeCampaña-btn' in keys_request_POST:
             return HttpResponseRedirect('computar_costeCampaña')
-        
         elif 'listar-informes-btn' in keys_request_POST:
             return HttpResponseRedirect('listar_informes')
 
@@ -37,27 +30,44 @@ def computar_salario(request):
         if form1.is_valid() and form2.is_valid():
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                    cursor.execute(f"""SELECT IdInforme FROM InformeSalarialEmpleado WHERE DNI='{str(form2.cleaned_data["DNI"])}'""")
-                    IdInforme = cursor.fetchall()
-                    cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{IdInforme}'""")
-                    Fecha_Informe = cursor.fetchall()
-                    if (form1.cleaned_data["Fecha_Informe"] in Fecha_Informe):
-                        error_message="ERROR: Ya existe un Informe Salarial para el empleado en la fecha proporcionada en la BD"
-                        return render(request,"computar_salario.html", {'form1':InformeCuentasForm(), 'form2':InformeSalarialEmpleadoForm(), 'error_message': error_message})
-                    
-                    else:
-                        cursor.execute("SAVEPOINT save_previa_computar_salario")
+                    try:
+                        cursor.execute(f"""SELECT IdInforme FROM InformeSalarialEmpleado WHERE DNI='{form2.cleaned_data["DNI"]}'""")
+                        IdInforme = []
+                        for t in cursor.fetchall():
+                            for x in t:
+                                IdInforme.append(x)
+                        Fecha = []
+                        for id in IdInforme:
+                            cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{id}'""")
+                            Fecha.append(cursor.fetchall())
+                        Fecha_Informe = []
+                        for t in Fecha:
+                            for x in t:
+                                Fecha_Informe.append(x)
+                        Fecha = []
+                        for t in Fecha_Informe:
+                            for x in t:
+                                Fecha.append(x.date())
+                        if (form1.cleaned_data["Fecha_Informe"] in Fecha):
+                            error_message="ERROR: Ya existe un Informe Salarial para el empleado en la fecha proporcionada en la BD"
+                            return render(request,"computar_salario.html", {'form1':InformeCuentasForm(), 'form2':InformeSalarialEmpleadoForm(), 'error_message': error_message})
+                        else:
+                            raise Exception()
+                    except:
+                        cursor.execute("SAVEPOINT save_previa_trabajador")
                         cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
-                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        VALUES ('{form1.cleaned_data["IdInforme"]}',
                                         TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
-                        cursor.execute(f"""INSERT INTO InformeSalarialEmpleado (IdInforme, DNI)
-                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
-                                        '{str(form2.cleaned_data["DNI"])}')""")
-                        return HttpResponseRedirect('../')
-                
+                        try:
+                            cursor.execute(f"""INSERT INTO InformeSalarialEmpleado (IdInforme, DNI)
+                                            VALUES ('{form1.cleaned_data["IdInforme"]}',
+                                            '{form2.cleaned_data["DNI"]}')""")
+                            return HttpResponseRedirect('../') 
+                        except:
+                            cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_trabajador""")
+                            raise Exception()
             except:
-                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe Salarial. 
-                Comprueba que el DNI introducido esté asociado a algún empleado del sistema"""
+                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe Salarial."""
                 return render(request,"computar_salario.html", {'form1':InformeCuentasForm(), 'form2':InformeSalarialEmpleadoForm(), 'error_message': error_message})
         else:
             error_message="""ERROR en alguno de los campos a rellenar del Informe Salarial"""
@@ -71,26 +81,44 @@ def computar_pagoProveedor(request):
         if form1.is_valid() and form2.is_valid():
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                    cursor.execute(f"""SELECT IdInforme FROM InformeProveedor WHERE NumProveedor='{str(form2.cleaned_data["NumProveedor"])}'""")
-                    IdInforme = cursor.fetchall()
-                    cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{IdInforme}'""")
-                    Fecha_Informe = cursor.fetchall()
-                    if (form1.cleaned_data["Fecha_Informe"] in Fecha_Informe):
-                        error_message="ERROR: Ya existe un Informe de Proveedor para el proveedor en la fecha proporcionada en la BD"
-                        return render(request,"computar_pagoProveedor.html", {'form1':InformeCuentasForm(), 'form2':InformeProveedorForm(), 'error_message': error_message})
-                    else:        
-                        cursor.execute("SAVEPOINT save_previa_computar_pagoProveedor")
+                    try:
+                        cursor.execute(f"""SELECT IdInforme FROM InformeProveedor WHERE NumProveedor='{form2.cleaned_data["NumProveedor"]}'""")
+                        IdInforme = []
+                        for t in cursor.fetchall():
+                            for x in t:
+                                IdInforme.append(x)
+                        Fecha = []
+                        for id in IdInforme:
+                            cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{id}'""")
+                            Fecha.append(cursor.fetchall())
+                        Fecha_Informe = []
+                        for t in Fecha:
+                            for x in t:
+                                Fecha_Informe.append(x)
+                        Fecha = []
+                        for t in Fecha_Informe:
+                            for x in t:
+                                Fecha.append(x.date())
+                        if (form1.cleaned_data["Fecha_Informe"] in Fecha):
+                            error_message="ERROR: Ya existe un Informe de Proveedor para el proveedor en la fecha proporcionada en la BD"
+                            return render(request,"computar_pagoProveedor.html", {'form1':InformeCuentasForm(), 'form2':InformeProveedorForm(), 'error_message': error_message})
+                        else:
+                            raise Exception()
+                    except:
+                        cursor.execute("SAVEPOINT save_previa_pagoProveedor")
                         cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
-                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        VALUES ('{form1.cleaned_data["IdInforme"]}',
                                         TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
-                        cursor.execute(f"""INSERT INTO InformeProveedor (IdInforme, NumProveedor)
-                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
-                                        '{str(form2.cleaned_data["NumProveedor"])}')""")
-                        return HttpResponseRedirect('../')
-                
+                        try:
+                            cursor.execute(f"""INSERT INTO InformeProveedor (IdInforme, NumProveedor)
+                                            VALUES ('{form1.cleaned_data["IdInforme"]}',
+                                            '{form2.cleaned_data["NumProveedor"]}')""")
+                            return HttpResponseRedirect('../')
+                        except:
+                            cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_pagoProveedor""")
+                            raise Exception()    
             except:
-                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe de Proveedor. 
-                Comprueba que el Número de Proveedor introducido esté asociado a algún proveedor del sistema"""
+                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe de Proveedor."""
                 return render(request,"computar_pagoProveedor.html", {'form1':InformeCuentasForm(), 'form2':InformeProveedorForm(), 'error_message': error_message})
         else:
             error_message="""ERROR en alguno de los campos a rellenar del Informe de Proveedor"""
@@ -104,24 +132,29 @@ def computar_costeCampaña(request):
         if form1.is_valid() and form2.is_valid():
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                    cursor.execute(f"""SELECT IdCampaña FROM InformeCuentas""")
-                    IdCampaña = cursor.fetchall()
-                    if (form2.cleaned_data["IdCampaña"] in IdCampaña):
-                        error_message="ERROR: Ya existe un Informe de Campaña para la campaña publicitaria proporcionada en la BD"
-                        return render(request,"computar_costeCampaña.html", {'form1':InformeCuentasForm(), 'form2':InformeCampañaForm(), 'error_message': error_message})
-                    else:
-                        cursor.execute("SAVEPOINT save_previa_computar_costeCampaña")
+                    try:
+                        cursor.execute(f"""SELECT IdCampaña FROM InformeCampaña""")
+                        IdCampaña = cursor.fetchall()
+                        if ((form2.cleaned_data["IdCampaña"],) in IdCampaña):
+                            error_message="ERROR: Ya existe un Informe de Campaña para la campaña publicitaria proporcionada en la BD"
+                            return render(request,"computar_costeCampaña.html", {'form1':InformeCuentasForm(), 'form2':InformeCampañaForm(), 'error_message': error_message})
+                        else:
+                            raise Exception()
+                    except:
+                        cursor.execute(f"""SAVEPOINT save_previa_costeCampaña""")
                         cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
-                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        VALUES ('{form1.cleaned_data["IdInforme"]}',
                                         TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
-                        cursor.execute(f"""INSERT INTO InformeCampaña (IdInforme, IdCampaña)
-                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
-                                        '{str(form2.cleaned_data["IdCampaña"])}')""")
-                        return HttpResponseRedirect('../')
-                
+                        try:
+                            cursor.execute(f"""INSERT INTO InformeCampaña (IdInforme, IdCampaña)
+                                            VALUES ('{form1.cleaned_data["IdInforme"]}',
+                                            '{form2.cleaned_data["IdCampaña"]}')""")
+                            return HttpResponseRedirect('../')
+                        except:
+                            cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_costeCampaña""")
+                            raise Exception()        
             except:
-                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe de Campaña Publicitaria.
-                Comprueba que el Identificador de Campaña introducido esté asociado a alguna campaña publicitaria del sistema"""
+                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe de Campaña Publicitaria."""
                 return render(request,"computar_costeCampaña.html", {'form1':InformeCuentasForm(), 'form2':InformeCampañaForm(), 'error_message': error_message})
         else:
             error_message="ERROR en alguno de los campos a rellenar del Informe de Campaña Publicitaria"
@@ -135,24 +168,37 @@ def computar_impuestos(request):
         if form1.is_valid() and form2.is_valid():
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                    cursor.execute(f"""SELECT IdInforme FROM InformeTributario""")
-                    IdInforme = cursor.fetchall()
-                    cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{IdInforme}'""")
-                    Fecha_Informe = cursor.fetchall()
-                    if (form1.cleaned_data["Fecha_Informe"] in Fecha_Informe):
-                        error_message="ERROR: Ya existe un Informe Tributario para la fecha proporcionada en la BD"
-                        return render(request,"computar_impuestos.html", {'form1':InformeCuentasForm(), 'form2':InformeTributarioForm(), 'error_message': error_message})
-                    
-                    else:
-                        cursor.execute("SAVEPOINT save_previa_computar_impuestos")
+                    try:
+                        cursor.execute(f"""SELECT IdInforme FROM InformeTributario""")
+                        IdInforme = []
+                        for t in cursor.fetchall():
+                            for x in t:
+                                IdInforme.append(x)
+                        Fecha = []
+                        for id in IdInforme:
+                            cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{id}'""")
+                            Fecha.append(cursor.fetchall())
+                        Fecha_Informe = []
+                        for t in Fecha:
+                            for x in t:
+                                Fecha_Informe.append(x)
+                        Fecha = []
+                        for t in Fecha_Informe:
+                            for x in t:
+                                Fecha.append(x.date())
+                        if (form1.cleaned_data["Fecha_Informe"] in Fecha):
+                            error_message="ERROR: Ya existe un Informe Tributario para la fecha proporcionada en la BD"
+                            return render(request,"computar_impuestos.html", {'form1':InformeCuentasForm(), 'form2':InformeTributarioForm(), 'error_message': error_message})
+                        else:
+                            raise Exception()
+                    except:
                         cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
-                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        VALUES ('{form1.cleaned_data["IdInforme"]}',
                                         TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
                         cursor.execute(f"""INSERT INTO InformeTributario (IdInforme, ImporteTributario)
-                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
-                                        '{str(form2.cleaned_data["ImporteTributario"])}')""")
+                                        VALUES ('{form1.cleaned_data["IdInforme"]}',
+                                        '{form2.cleaned_data["ImporteTributario"]}')""")
                         return HttpResponseRedirect('../')
-                
             except:
                 error_message="""ERROR en la inserción en la Base de Datos de la información del Informe Tributario"""
                 return render(request,"computar_impuestos.html", {'form1':InformeCuentasForm(), 'form2':InformeTributarioForm(), 'error_message': error_message})
@@ -164,31 +210,44 @@ def computar_impuestos(request):
 def computar_beneficiosPOS(request):
     if request.method == 'POST' :
         form1 = InformeCuentasForm(request.POST)
-        form2 = InformeTributarioForm(request.POST)
+        form2 = InformePOSForm(request.POST)
         if form1.is_valid() and form2.is_valid():
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                    cursor.execute(f"""SELECT IdInforme FROM InformePOS WHERE CodigoPOS = '{str(form2.cleaned_data["CodigoPOS"])}'""")
-                    IdInforme = cursor.fetchal()
-                    cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{IdInforme}'""")
-                    Fecha_Informe = cursor.fetchall()
-                    if (form1.cleaned_data["Fecha_Informe"] in Fecha_Informe):
-                        error_message="ERROR: Ya existe un Informe de Punto de Venta para la fecha proporcionada en la BD"
-                        return render(request,"computar_beneficiosPOS.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'error_message': error_message})
-                    
-                    else:
-                        cursor.execute("SAVEPOINT save_previa_computar_benefeciosPOS")
+                    try:
+                        cursor.execute(f"""SELECT IdInforme FROM InformePOS WHERE CodigoPOS = '{form2.cleaned_data["CodigoPOS"]}'""")
+                        IdInforme = []
+                        for t in cursor.fetchall():
+                            for x in t:
+                                IdInforme.append(x)
+                        Fecha = []
+                        for id in IdInforme:
+                            cursor.execute(f"""SELECT Fecha_Informe FROM InformeCuentas WHERE IdInforme='{id}'""")
+                            Fecha.append(cursor.fetchall())
+                        Fecha_Informe = []
+                        for t in Fecha:
+                            for x in t:
+                                Fecha_Informe.append(x)
+                        Fecha = []
+                        for t in Fecha_Informe:
+                            for x in t:
+                                Fecha.append(x.date())
+                        if (form1.cleaned_data["Fecha_Informe"] in Fecha):
+                            error_message="ERROR: Ya existe un Informe de Punto de Venta para la fecha proporcionada en la BD"
+                            return render(request,"computar_beneficiosPOS.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'error_message': error_message})
+                        else:
+                            raise Exception()
+                    except:
                         cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
-                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
+                                        VALUES ('{form1.cleaned_data["IdInforme"]}',
                                         TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
-                        cursor.execute(f"""INSERT INTO InformeTributario (IdInforme, BeneficiosPOS, CodigoPOS)
-                                        VALUES ('{str(form1.cleaned_data["IdInforme"])}',
-                                        '{str(form2.cleaned_data["BeneficiosPOS"])}',
-                                        '{str(form2.cleaned_data["CodigoPOS"])}')""")
-                        return HttpResponseRedirect('../')
-                
+                        cursor.execute(f"""INSERT INTO InformePOS (IdInforme, BeneficiosPOS, CodigoPOS)
+                                        VALUES ('{form1.cleaned_data["IdInforme"]}',
+                                        '{form2.cleaned_data["BeneficiosPOS"]}',
+                                        '{form2.cleaned_data["CodigoPOS"]}')""")
+                        return HttpResponseRedirect('../')         
             except:
-                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe de Punto de Venta."""
+                error_message="""ERROR en la inserción en la Base de Datos de la información del Informe de Punto de Venta"""
                 return render(request,"computar_beneficiosPOS.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'error_message': error_message})
         else:
             error_message="ERROR en alguno de los campos a rellenar del Informe de Punto de Venta"
@@ -268,7 +327,6 @@ def listar_informes(request):
                         'inf_POS':inf_POS, 'inf_pro':inf_pro,
                         'inf_campaña': inf_campaña,
                         'tablas_vacias':tablas_vacias })
-
     except:
         error_message_mostrar_tabs="ERROR: Las tablas no se han podido mostrar."
         return render( request, "listar_informes.html", {"error_message_mostrar_tabs": error_message_mostrar_tabs})
