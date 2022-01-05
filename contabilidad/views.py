@@ -62,8 +62,9 @@ def computar_salario(request):
                             cursor.execute(f"""INSERT INTO InformeSalarialEmpleado (IdInforme, DNI)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["DNI"]}')""")
-                            args=(form1.cleaned_data["IdInforme"],)
-                            cursor.callproc('inf_salarial',args)
+                            print("hola1")
+                            cursor.execute(f"""BEGIN inf_salarial('{form1.cleaned_data["IdInforme"]}'); END;""")
+                            cursor.execute("""COMMIT""")
                             return HttpResponseRedirect('../') 
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_trabajador""")
@@ -115,8 +116,8 @@ def computar_pagoProveedor(request):
                             cursor.execute(f"""INSERT INTO InformeProveedor (IdInforme, NumProveedor)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["NumProveedor"]}')""")
-                            args=(form1.cleaned_data["IdInforme"],)
-                            cursor.callproc('inf_proveedor',args)
+                            cursor.execute(f"""BEGIN inf_proveedor('{form1.cleaned_data["IdInforme"]}'); END;""")
+                            cursor.execute("""COMMIT""")
                             return HttpResponseRedirect('../')
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_pagoProveedor""")
@@ -153,8 +154,8 @@ def computar_costeCampaña(request):
                             cursor.execute(f"""INSERT INTO InformeCampaña (IdInforme, IdCampaña)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["IdCampaña"]}')""")
-                            args=(form1.cleaned_data["IdInforme"],)
-                            cursor.callproc('inf_campaña',args)
+                            cursor.execute(f"""BEGIN inf_campaña('{form1.cleaned_data["IdInforme"]}'); END;""")
+                            cursor.execute("""COMMIT""")
                             return HttpResponseRedirect('../')
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_costeCampaña""")
@@ -206,8 +207,8 @@ def computar_impuestos(request):
                             cursor.execute(f"""INSERT INTO InformeTributario (IdInforme, ImporteTributario)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["ImporteTributario"]}')""")
-                            args=(form1.cleaned_data["IdInforme"],)
-                            cursor.callproc('inf_TRIB',args)
+                            cursor.execute(f"""BEGIN inf_TRIB('{form1.cleaned_data["IdInforme"]}'); END;""")
+                            cursor.execute("""COMMIT""")
                             return HttpResponseRedirect('../')
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_impuestos""")
@@ -260,8 +261,8 @@ def computar_beneficiosPOS(request):
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["BeneficiosPOS"]}',
                                             '{form2.cleaned_data["CodigoPOS"]}')""")
-                            args=(form1.cleaned_data["IdInforme"],)
-                            cursor.callproc('inf_pos',args)
+                            cursor.execute(f"""BEGIN inf_pos('{form1.cleaned_data["IdInforme"]}'); END;""")
+                            cursor.execute("""COMMIT""")
                             return HttpResponseRedirect('../')
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_pos""")
