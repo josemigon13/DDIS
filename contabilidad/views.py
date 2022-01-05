@@ -62,6 +62,8 @@ def computar_salario(request):
                             cursor.execute(f"""INSERT INTO InformeSalarialEmpleado (IdInforme, DNI)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["DNI"]}')""")
+                            args=(form1.cleaned_data["IdInforme"],)
+                            cursor.callproc('inf_salarial',args)
                             return HttpResponseRedirect('../') 
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_trabajador""")
@@ -113,6 +115,8 @@ def computar_pagoProveedor(request):
                             cursor.execute(f"""INSERT INTO InformeProveedor (IdInforme, NumProveedor)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["NumProveedor"]}')""")
+                            args=(form1.cleaned_data["IdInforme"],)
+                            cursor.callproc('inf_proveedor',args)
                             return HttpResponseRedirect('../')
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_pagoProveedor""")
@@ -149,6 +153,8 @@ def computar_costeCampaña(request):
                             cursor.execute(f"""INSERT INTO InformeCampaña (IdInforme, IdCampaña)
                                             VALUES ('{form1.cleaned_data["IdInforme"]}',
                                             '{form2.cleaned_data["IdCampaña"]}')""")
+                            args=(form1.cleaned_data["IdInforme"],)
+                            cursor.callproc('inf_campaña',args)
                             return HttpResponseRedirect('../')
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_costeCampaña""")
@@ -192,13 +198,20 @@ def computar_impuestos(request):
                         else:
                             raise Exception()
                     except:
+                        cursor.execute(f"""SAVEPOINT save_previa_impuestos""")
                         cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
                                         VALUES ('{form1.cleaned_data["IdInforme"]}',
                                         TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
-                        cursor.execute(f"""INSERT INTO InformeTributario (IdInforme, ImporteTributario)
-                                        VALUES ('{form1.cleaned_data["IdInforme"]}',
-                                        '{form2.cleaned_data["ImporteTributario"]}')""")
-                        return HttpResponseRedirect('../')
+                        try:
+                            cursor.execute(f"""INSERT INTO InformeTributario (IdInforme, ImporteTributario)
+                                            VALUES ('{form1.cleaned_data["IdInforme"]}',
+                                            '{form2.cleaned_data["ImporteTributario"]}')""")
+                            args=(form1.cleaned_data["IdInforme"],)
+                            cursor.callproc('inf_TRIB',args)
+                            return HttpResponseRedirect('../')
+                        except:
+                            cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_impuestos""")
+                            raise Exception()
             except:
                 error_message="""ERROR en la inserción en la Base de Datos de la información del Informe Tributario"""
                 return render(request,"computar_impuestos.html", {'form1':InformeCuentasForm(), 'form2':InformeTributarioForm(), 'error_message': error_message})
@@ -238,14 +251,21 @@ def computar_beneficiosPOS(request):
                         else:
                             raise Exception()
                     except:
+                        cursor.execute(f"""SAVEPOINT save_previa_pos""")
                         cursor.execute(f"""INSERT INTO InformeCuentas (IdInforme, Fecha_Informe)
                                         VALUES ('{form1.cleaned_data["IdInforme"]}',
                                         TO_DATE('{form1.cleaned_data["Fecha_Informe"]}','yyyy-mm-dd'))""")
-                        cursor.execute(f"""INSERT INTO InformePOS (IdInforme, BeneficiosPOS, CodigoPOS)
-                                        VALUES ('{form1.cleaned_data["IdInforme"]}',
-                                        '{form2.cleaned_data["BeneficiosPOS"]}',
-                                        '{form2.cleaned_data["CodigoPOS"]}')""")
-                        return HttpResponseRedirect('../')         
+                        try:
+                            cursor.execute(f"""INSERT INTO InformePOS (IdInforme, BeneficiosPOS, CodigoPOS)
+                                            VALUES ('{form1.cleaned_data["IdInforme"]}',
+                                            '{form2.cleaned_data["BeneficiosPOS"]}',
+                                            '{form2.cleaned_data["CodigoPOS"]}')""")
+                            args=(form1.cleaned_data["IdInforme"],)
+                            cursor.callproc('inf_pos',args)
+                            return HttpResponseRedirect('../')
+                        except:
+                            cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_pos""")
+                            raise Exception()    
             except:
                 error_message="""ERROR en la inserción en la Base de Datos de la información del Informe de Punto de Venta"""
                 return render(request,"computar_beneficiosPOS.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'error_message': error_message})

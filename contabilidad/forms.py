@@ -2,7 +2,7 @@ from django import forms
 import datetime
 
 class InformeCuentasForm(forms.Form):
-    IdInforme = forms.IntegerField(label="Identificador de Informe", 
+    IdInforme = forms.IntegerField(min_value=1, label="Identificador de Informe", 
                                 widget=forms.TextInput(attrs={'placeholder': "Introduce identificador de informe"}))
     DATE_SELECTION = []
     for year in range(1999, (datetime.datetime.now().year+1)):
