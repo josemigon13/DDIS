@@ -33,14 +33,20 @@
     </div>
     <div>
         <button class="btn btn-primary" id="alta-oferta-emp-btn" name="alta-oferta-emp-btn" type="submit">
-            Dar de alta oferta de trabajo
+            Dar de alta oferta de empleo
         </button>
     </div>
     <div>
         <button class="btn btn-primary" id="baja-oferta-emp-btn" name="baja-oferta-emp-btn" type="submit">
-            Dar de baja oferta de trabajo
+            Dar de baja oferta de empleo
         </button>
     </div>
+
+    <center>
+    <div>
+        <a href="{% url 'login_menu_pral:menu' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+    </div>
+    </center>
 
     {% if error_message %}
     <br>

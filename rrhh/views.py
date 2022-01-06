@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from login_menu_pral.views import Conexion_BD
 from .forms import *
 from operator import itemgetter
+import cx_Oracle
 
 # Create your views here.
 
@@ -32,13 +33,24 @@ def alta_contrato(request):
             Tlf_Empleado=form.cleaned_data["Tlf_Empleado"]
             NumSegSocial=form.cleaned_data["NumSegSocial"]
             Salario=form.cleaned_data["Salario"]
+
+
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
                     cursor.execute("SAVEPOINT save_previa_alta_contr")
-                    cursor.execute(f"""INSERT INTO Contrato (DNI, IDOfertaEmpleo, Nombre_Empleado, Tlf_Empleado, NumSegSocial, Salario) VALUES ('{str(DNI)}', '{str(IDOfertaEmpleo)}', '{str(Nombre_Empleado)}', '{str(Tlf_Empleado)}', '{str(NumSegSocial)}', '{str(Salario)}'""")
+                    cursor.execute(f"""INSERT INTO Contrato (DNI, IDOfertaEmpleo, Nombre_Empleado, Tlf_Empleado, NumSegSocial, Salario) VALUES ('{str(DNI)}', '{str(IDOfertaEmpleo)}', '{str(Nombre_Empleado)}', '{str(Tlf_Empleado)}', '{str(NumSegSocial)}', '{str(Salario)}')""")
+                    cursor.callproc("dbms_output.enable")
+                    cursor.execute(f"""BEGIN DNI_contrato('{form.cleaned_data["DNI"]}'); END;""")
+                    statusVar = cursor.var(cx_Oracle.NUMBER)
+                    lineVar = cursor.var(cx_Oracle.STRING)
+                    while True:
+                        cursor.callproc("dbms_output.get_line", (lineVar, statusVar))
+                        if statusVar.getvalue() != 0:
+                            break
+                        success_message = lineVar.getvalue()
+                    cursor.execute("""COMMIT""")
+                    return render(request,"alta_contrato.html", {'form':AltaContratoForm(), "success_message": success_message})
                     
-                success_message=f"Insertando el contrato con DNI {str(DNI)}"
-                return render(request,"alta_contrato.html", {'form':AltaContratoForm(), "success_message": success_message})
             
             except:
                 error_message="ERROR en la inserción a la Base de Datos de la información del contrato"
@@ -57,10 +69,19 @@ def baja_contrato(request):
     if request.method == 'POST' :
         form = BajaContratoForm(request.POST)
         if form.is_valid():
-            DNI = form.cleaned_data["DNI"]
+            DNI = form.cleaned_data["ListaContrato"]
 
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
+
+                    cursor.execute(f"SELECT IdInforme FROM InformeSalarialEmpleado WHERE DNI = '{str(DNI)}'")
+                    listaID=[]
+                    for fila in cursor.fetchall():
+                        listaID.append(fila[0])
+                    for fila1 in listaID:
+                        cursor.execute(f"DELETE FROM InformeSalarialEmpleado WHERE IdInforme = '{str(fila1[0])}'")
+                        cursor.execute(f"DELETE FROM InformeCuentas WHERE IdInforme = '{str(fila1[0])}'")
+                        
                     cursor.execute(f"DELETE FROM Contrato WHERE DNI = '{str(DNI)}'")
                     cursor.execute("COMMIT")
 
@@ -113,21 +134,29 @@ def alta_oferta_emp(request):
             FechaIni_OferEmp=form.cleaned_data["FechaIni_OferEmp"]
             FechaFin_OferEmp=form.cleaned_data["FechaFin_OferEmp"]
 
-            print("IDOfertaEmpleo:", IDOfertaEmpleo)
-            print("ListadoEmpleos:", ListadoEmpleos)
-            print("FechaIni_OferEmp:", FechaIni_OferEmp)
-            print("FechaFin_OferEmp:", FechaFin_OferEmp)
+            try:
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                    cursor.execute("SAVEPOINT save_previa_alta_empleo")
+                    cursor.execute(f"""INSERT INTO OfertaEmpleo (IDOfertaEmpleo, ListadoEmpleos, FechaIni_OferEmp, FechaFin_OferEmp) VALUES ('{str(IDOfertaEmpleo)}', '{str(ListadoEmpleos)}', TO_DATE('{FechaIni_OferEmp}','yyyy-mm-dd'), TO_DATE('{FechaFin_OferEmp}','yyyy-mm-dd'))""")
+                    cursor.callproc("dbms_output.enable")
+                    cursor.execute(f"""BEGIN IDOfertaEmpleo_OfertaEmpleo('{form.cleaned_data["IDOfertaEmpleo"]}'); END;""")
+                    statusVar = cursor.var(cx_Oracle.NUMBER)
+                    lineVar = cursor.var(cx_Oracle.STRING)
+                    while True:
+                        cursor.callproc("dbms_output.get_line", (lineVar, statusVar))
+                        if statusVar.getvalue() != 0:
+                            break
+                        success_message = lineVar.getvalue()
+                    cursor.execute("""COMMIT""")
+                    return render(request,"alta_oferta_emp.html", {'form':AltaOfertaForm(), "success_message": success_message})
 
-            #try:
-            with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                cursor.execute("SAVEPOINT save_previa_alta_empleo")
-                cursor.execute(f"""INSERT INTO OfertaEmpleo (IDOfertaEmpleo, ListadoEmpleos, FechaIni_OferEmp, FechaFin_OferEmp) VALUES ('{str(IDOfertaEmpleo)}', '{str(ListadoEmpleos)}', TO_DATE('{FechaIni_OferEmp}','yyyy-mm-dd'), TO_DATE('{FechaFin_OferEmp}','yyyy-mm-dd'))""")
-                    
-            return HttpResponseRedirect("/menu/rrhh/alta_oferta_emp/")
+                    #cursor.execute("COMMIT")    
+                
+                #return HttpResponseRedirect("/menu/rrhh/alta_oferta_emp/")
             
-            #except:
-                #error_message="ERROR en la inserción a la Base de Datos de la información de la oferta de empleo"
-                #return render(request,"alta_oferta_emp.html", {"form": form, "error_message": error_message})
+            except:
+                error_message="ERROR en la inserción a la Base de Datos de la información de la oferta de empleo"
+                return render(request,"alta_oferta_emp.html", {"form": form, "error_message": error_message})
                 
         else:
             error_message="ERROR en los campos a rellenar sobre la oferta"
@@ -139,19 +168,38 @@ def baja_oferta_emp(request):
     if request.method == 'POST' :
         form = BajaOfertaForm(request.POST)
         if form.is_valid():
-            IDOfertaEmpleo = form.cleaned_data["IDOfertaEmpleo"]
+            IDOfertaEmpleo = form.cleaned_data["ListaOfertas"]
 
-            try:
-                with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                    cursor.execute(f"DELETE FROM OfertaEmpleo WHERE IDOfertaEmpleo = '{str(IDOfertaEmpleo)}'")
-                    cursor.execute("COMMIT")
+            #try:
+            with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                cursor.execute(f"SELECT DNI FROM Contrato WHERE IDOfertaEmpleo = '{str(IDOfertaEmpleo)}'")
 
-                success_message=f"Eliminado la oferta con ID {str(IDOfertaEmpleo)}"
-                return render(request,"baja_oferta_emp.html", {'form':BajaOfertaForm(), "success_message": success_message})
+                listaDNI=[]
+                for fila in cursor.fetchall():
+                    listaDNI.append(fila[0])
+
+                
+                for d in listaDNI:
+                    cursor.execute(f"SELECT IdInforme FROM InformeSalarialEmpleado WHERE DNI = '{str(d[0])}'")
+                    listaID=[]
+                    for fila1 in cursor.fetchall():
+                        listaID.append(fila1[0])
+
+                    for fila2 in listaID:
+                        cursor.execute(f"DELETE FROM InformeSalarialEmpleado WHERE IdInforme = '{str(fila2[0])}'")
+                        cursor.execute(f"DELETE FROM InformeCuentas WHERE IdInforme = '{str(fila2[0])}'")
+
+                        
+                cursor.execute(f"DELETE FROM Contrato WHERE IDOfertaEmpleo = '{str(IDOfertaEmpleo)}'")
+                cursor.execute(f"DELETE FROM OfertaEmpleo WHERE IDOfertaEmpleo = '{str(IDOfertaEmpleo)}'")
+                cursor.execute("COMMIT")
+
+            success_message=f"Eliminado la oferta con ID {str(IDOfertaEmpleo)}"
+            return render(request,"baja_oferta_emp.html", {'form':BajaOfertaForm(), "success_message": success_message})
             
-            except:
-                error_message="ERROR en el borrado de la oferta de empleo"
-                return render(request,"baja_oferta_emp.html", {"form": form, "error_message": error_message})
+            #except:
+            #    error_message="ERROR en el borrado de la oferta de empleo"
+            #    return render(request,"baja_oferta_emp.html", {"form": form, "error_message": error_message})
                 
         else:
             error_message="ERROR en los campos a rellenar de la oferta de empleo"

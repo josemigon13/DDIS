@@ -32,12 +32,28 @@
     <center>{{ error_message }}</div></center>
 </div>
 {% endif %}
-{% if success_message %}
+
+{% if mostrar_tablas %}
 <br>
-<div class="alert alert-success">
-    <center>{{ success_message }}</div></center>
-</div>
+<center>
+<table border>
+<tr align=center>
+    <th scope="col"> DNI </th>
+    <th scope="col"> IDOfertaEmpleado </th>
+    <th scope="col"> Nombre_Empleado </th>
+    <th scope="col"> Tlf_Empleado </th>
+    <th scope="col"> NumSegSocial </th>
+    <th scope="col"> Salario </th>
+</tr>
+<tr align=center>
+    <td>{{contr.DNI}}</td>
+    <td>{{contr.IDOfertaEmpleado}}</td><td> {{contr.Nombre_Empleado}}</td>
+    <td>{{contr.Tlf_Empleado}}</td><td> {{contr.NumSegSocial}}</td>
+    <td>{{contr.Salario}}</td>    
+</tr>
+</table>
+</center>
 <br>
-{% endif %}
+{% endif%}
 
 {% endblock content %}
