@@ -8,10 +8,10 @@
 
 <center> <h1> Consulta de Campaña Publicitaria</h1> </center>
 
-    {% if error_message_mostrar_tabs %}
+    {% if error_message %}
         <br>
         <div class="alert alert-danger">
-            <center>{{ error_message_mostrar_tabs }}</div></center>
+            <center>{{ error_message }}</div></center>
         </div>
         <br>
     {% endif%}
@@ -27,6 +27,7 @@
             <th scope="col"> ListaMediosEmision </th>
             <th scope="col"> FechaIni_CampPub </th>
             <th scope="col"> FechaFin_CampPub </th>
+            <th scope="col"> Lista de IdOfertaProd promocionadas </th>
         </tr>
         <tr align=center>
             <td>{{camp_pub_seleccionada.IdCampaña}}</td><td> {{camp_pub_seleccionada.Nombre_CampPub}}</td>
@@ -34,6 +35,7 @@
             <td>{{camp_pub_seleccionada.ListaMediosEmision}}</td>
             <td>{{camp_pub_seleccionada.FechaIni_CampPub.year}}/{{camp_pub_seleccionada.FechaIni_CampPub.month}}/{{camp_pub_seleccionada.FechaIni_CampPub.day}}</td>
             <td>{{camp_pub_seleccionada.FechaFin_CampPub.year}}/{{camp_pub_seleccionada.FechaFin_CampPub.month}}/{{camp_pub_seleccionada.FechaFin_CampPub.day}}</td>    
+            <td>{{camp_pub_seleccionada.IdOfertaProd_promocionadas}}</td>
         </tr>
         </table>
         </center>

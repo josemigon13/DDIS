@@ -84,8 +84,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'oracle0.ugr.es:1521/practbd.oracle0.ugr.es',
-        'USER': 'x7034014',
-        'PASSWORD': 'x7034014',
+        'USER': 'x7391837',
+        'PASSWORD': 'x7391837',
         'AUTOCOMMIT' : False # Default: True. Set this to False if you want to disable Django’s transaction management and implement your own.
     }
 }

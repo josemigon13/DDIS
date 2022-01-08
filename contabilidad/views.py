@@ -180,7 +180,7 @@ def computar_costeCampaña(request):
                                     break
                                 message = lineVar.getvalue()
                             cursor.execute("""COMMIT""")
-                            return render(request,"computar_costeCampaña.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'message': message})
+                            return render(request,"computar_costeCampaña.html", {'form1':InformeCuentasForm(), 'form2':InformeCampañaForm(), 'message': message})
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_costeCampaña""")
                             raise Exception()        
