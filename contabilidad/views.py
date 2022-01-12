@@ -73,7 +73,7 @@ def computar_salario(request):
                                     break
                                 message = lineVar.getvalue()
                             cursor.execute("""COMMIT""")
-                            return render(request,"computar_salario.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'message': message}) 
+                            return render(request,"computar_salario.html", {'form1':InformeCuentasForm(), 'form2':InformeSalarialEmpleadoForm(), 'message': message}) 
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_trabajador""")
                             raise Exception()
@@ -134,7 +134,7 @@ def computar_pagoProveedor(request):
                                     break
                                 message = lineVar.getvalue()
                             cursor.execute("""COMMIT""")
-                            return render(request,"computar_pagoProveedor.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'message': message})
+                            return render(request,"computar_pagoProveedor.html", {'form1':InformeCuentasForm(), 'form2':InformeProveedorForm(), 'message': message})
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_pagoProveedor""")
                             raise Exception()    
@@ -241,7 +241,7 @@ def computar_impuestos(request):
                                     break
                                 message = lineVar.getvalue()
                             cursor.execute("""COMMIT""")
-                            return render(request,"computar_impuestos.html", {'form1':InformeCuentasForm(), 'form2':InformePOSForm(), 'message': message})
+                            return render(request,"computar_impuestos.html", {'form1':InformeCuentasForm(), 'form2':InformeTributarioForm(), 'message': message})
                         except:
                             cursor.execute(f"""ROLLBACK TO SAVEPOINT save_previa_impuestos""")
                             raise Exception()
