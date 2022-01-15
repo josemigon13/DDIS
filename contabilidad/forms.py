@@ -7,8 +7,8 @@ class InformeCuentasForm(forms.Form):
     DATE_SELECTION = []
     for year in range(1999, (datetime.datetime.now().year+1)):
         for month in range (1, 12+1):
-            DATE_SELECTION.append(("1/"+str(month)+"/"+str(year), "1/"+str(month)+"/"+str(year)))
-    Fecha_Informe = forms.DateField(widget=forms.Select(choices=DATE_SELECTION))                       
+            DATE_SELECTION.append((str(month)+"/1/"+str(year), str(month)+"/1/"+str(year)))
+    Fecha_Informe = forms.DateField(widget=forms.Select(choices=DATE_SELECTION))                     
 
 class InformeSalarialEmpleadoForm(forms.Form):
     DNI = forms.CharField(max_length=10,
