@@ -9,11 +9,10 @@
 <form method="post">
     {% csrf_token %}
 
-    <!--
-    {% if error_message_mostrar_tabs %}
+    {% if error_message %}
         <br>
         <div class="alert alert-danger">
-            <center>{{ error_message_mostrar_tabs }}</div></center>
+            <center>{{ error_message }}</div></center>
         </div>
         
     {% elif tablas_vacias %}
@@ -22,9 +21,7 @@
             <center>Las tablas de la Base de Datos están vacías</div></center>
         </div>
     
-    {% endif%}
-    -->
-    
+    {% else %}
     <center>
         <h1> Lista de Lotes de Productos </h1> 
     <table border>
@@ -38,11 +35,12 @@
     </tr>
     {% for lote in lotes %}
     <tr align=center>
-        <td>{{lote.IdLote}}</td><td>{{lote.IdAlmacén}}</td><td>{{lote.Descripción}}</td><td>{{lote.Unidad}}</td><td>{{lote.Cantidad}}</td><td> {{lote.Coste}}</td>
+        <td>{{lote.IdLote}}</td><td>{{lote.IdAlmacen}}</td><td>{{lote.Descripcion_Lote}}</td><td>{{lote.Unidad}}</td><td>{{lote.Cantidad_Lote}}</td><td> {{lote.Coste_Lote}}</td>
     </tr>
     {% endfor %}
     </table>
     </center>
+    {% endif %}
 </form>
 <center>
     <div>

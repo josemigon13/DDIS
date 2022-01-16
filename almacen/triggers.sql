@@ -43,40 +43,6 @@ EXCEPTION
         raise_application_error(-20600, :new.Coste_Lote || ' no puede ser negativo');
 END;
 
--- Disparador que muestra la descripción del lote borrado --
-
-DECLARE 
-    CURSOR lLote IS SELECT * FROM LoteProductosAlmacena;
-    registroLote lLote%ROWTYPE;
-BEGIN
-    OPEN lLote;
-    LOOP
-    FETCH lLote INTO registroLote;
-    EXIT WHEN registroLote.IdLote = :old.IdLote;
-    END LOOP;
-    DBMS_OUTPUT.PUT_LINE('Se ha borrado el lote ' || registroLote.Descripcion_Lote);
-    CLOSE lLote;
-END;
-
--- Disparador que muestra la dirección del almacén borrado --
-
-CREATE OR REPLACE TRIGGER dir_almacen
-    AFTER
-    DELETE ON Almacen
-    FOR EACH ROW
-DECLARE 
-    CURSOR aAlmacen IS SELECT * FROM Almacen;
-    registroAlmacen aAlmacen%ROWTYPE;
-BEGIN
-    OPEN aAlmacen;
-    LOOP
-    FETCH aAlmacen INTO registroAlmacen;
-    EXIT WHEN registroAlmacen.IdAlmacen = :old.IdAlmacen;
-    END LOOP;
-    DBMS_OUTPUT.PUT_LINE('Se ha borrado el almacén ' || registroAlmacen.Direccion);
-    CLOSE aAlmacen;
-END;
-
 --Método para mostrar la descripción del lote borrado--
 
 CREATE OR REPLACE PROCEDURE lote_borrado(idLote VARCHAR2) AS
@@ -88,7 +54,7 @@ BEGIN
     FETCH lLote INTO registroLote;
     EXIT WHEN registroLote.IdLote = idLote;
     END LOOP;
-    DBMS_OUTPUT.PUT_LINE('Se ha borrado el lote ' || registroLote.Descripcion_Lote);
+    DBMS_OUTPUT.PUT_LINE('Se ha borrado el lote de ' || registroLote.Descripcion_Lote);
     CLOSE lLote;
 END;
 
@@ -103,6 +69,6 @@ BEGIN
     FETCH aAlmacen INTO registroAlmacen;
     EXIT WHEN registroAlmacen.IdAlmacen = idAlmacen;
     END LOOP;
-    DBMS_OUTPUT.PUT_LINE('Se ha borrado el almacen ' || registroAlmacen.Direccion);
+    DBMS_OUTPUT.PUT_LINE('Se ha borrado el almacen de la ' || registroAlmacen.Direccion);
     CLOSE aAlmacen;
 END;

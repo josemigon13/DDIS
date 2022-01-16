@@ -1,11 +1,20 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.urls.base import is_valid_path
-from .models import *
 from .forms import *
 from login_menu_pral.views import Conexion_BD
 import cx_Oracle
+
+# Método que recupera los mensajes del DBMS
+
+def getDBMS(cursor):
+    statusVar = cursor.var(cx_Oracle.NUMBER)
+    lineVar = cursor.var(cx_Oracle.STRING)
+    while True:
+        cursor.callproc("dbms_output.get_line", (lineVar, statusVar))
+        if statusVar.getvalue() != 0:
+            break
+        message = lineVar.getvalue()
+    return message
 
 # Create your views here.
 
@@ -28,6 +37,7 @@ def menu_almacen(request):
 
 def alta_lote(request):
     form = LoteProductosAlmacenaForm()
+    errorInsert = ""
     if request.method == 'POST' :
         form = LoteProductosAlmacenaForm( request.POST )
         if form.is_valid():
@@ -38,20 +48,18 @@ def alta_lote(request):
             Cantidad_Lote = form.cleaned_data["Cantidad_Lote"]
             Coste_Lote = form.cleaned_data["Coste_Lote"]
             try:
-                with conexion_BD.cursor() as cursor:
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
                     cursor.callproc("dbms_output.enable")
-                    cursor.execute(f"""INSERT INTO LoteProductosAlmacena (IdLote, IdAlmacen, Descripcion_Lote, Unidad, Cantidad_Lote, Coste_Lote)
-                                    VALUES ({str(IdLote)}, {str(IdAlmacen)}, {str(Descripcion_Lote)}, {str(Unidad)}, {str(Cantidad_Lote)}, {str(Coste_Lote)})""")
-                    statusVar = cursor.var(cx_Oracle.NUMBER)
-                    lineVar = cursor.var(cx_Oracle.STRING)
-                    errorInsert = ''
-                    while True:
-                        errorInsert += cursor.callproc("dbms_output.get_line", (lineVar, statusVar))
-                        if statusVar.getvalue() != 0:
-                            break
-                return HttpResponseRedirect('/menu_almacen')
+                    cursor.execute(f"""INSERT INTO LoteProductosAlmacena (IdLote, IdAlmacen, Descripcion_Lote, Unidad, Cantidad, Coste_Lote)
+                                    VALUES ('{str(IdLote)}', '{str(IdAlmacen)}', '{str(Descripcion_Lote)}', '{str(Unidad)}', {str(Cantidad_Lote)}, {str(Coste_Lote)})""")
+                    errorInsert = getDBMS(cursor)
+                    cursor.execute("COMMIT")
+                return HttpResponseRedirect('/menu/almacen')
             except:
-                error_message="ERROR en la inserción a la Base de Datos de la información del lote"
+                if errorInsert == "" :
+                    error_message="ERROR en la inserción a la Base de Datos de la información del lote"
+                else:
+                    error_message = errorInsert
                 return render(request,"alta_lote.html",{'form':form, 'error_message':error_message})
         else:
             error_message="ERROR en los campos a rellenar del lote"
@@ -59,18 +67,20 @@ def alta_lote(request):
     return render(request,"alta_lote.html",{'form':form})
 
 def baja_lote(request):
-    form = LoteProductosAlmacenaForm()
+    form = pkLoteProductosAlmacenaForm()
     if request.method == 'POST' :
-        form = LoteProductosAlmacenaForm( request.POST )
+        form = pkLoteProductosAlmacenaForm( request.POST )
         if form.is_valid():
             IdLote = form.cleaned_data["IdLote"]
-
             try:
-                with conexion_BD.cursor() as cursor:
-                    cursor.callproc(f"""lote_borrado({str(IdLote)}""")
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                    cursor.callproc("dbms_output.enable")
+                    cursor.execute(f"""BEGIN lote_borrado('{str(IdLote)}'); END;""")
+                    confirmation_message = getDBMS(cursor)
                     cursor.execute(f"""DELETE FROM LoteProductosAlmacena
                                     WHERE IdLote = '{str(IdLote)}'""")
-                return HttpResponseRedirect('/menu_almacen')
+                    cursor.execute("COMMIT")
+                return render(request,"menu_almacen.html",{'confirmation_message':confirmation_message})
             except:
                 error_message="ERROR en el borrado del lote"
                 return render(request,"baja_lote.html",{'form':form, 'error_message':error_message})
@@ -81,8 +91,8 @@ def baja_lote(request):
 
 def listar_lotes(request):
     try:
-        lotes = []
-        with conexion_BD.cursor() as cursor:
+        with Conexion_BD().get_conexion_BD().cursor() as cursor:
+            lotes = []
             cursor.execute("SELECT * FROM LoteProductosAlmacena")
             lotes = [ {'IdLote':fila[0], 'IdAlmacen':fila[1], 'Descripcion_Lote':fila[2], 'Unidad':fila[3], 'Cantidad_Lote':fila[4], 'Coste_Lote':fila[5]} for fila in cursor.fetchall() ]
 
@@ -90,10 +100,11 @@ def listar_lotes(request):
         return render(request, "listar_lotes.html", {'lotes':lotes, 'tabla_vacia':tabla_vacia})
     except:
         error_message="ERROR. Las tablas no se han podido mostrar"
-        return render(request, "menu_almacen.html", {'error_message':error_message})
+        return render(request, "listar_lotes.html", {'error_message':error_message})
 
 def alta_almacen(request):
     form = AlmacenForm()
+    errorInsert = ""
     if request.method == 'POST' :
         form = AlmacenForm( request.POST )
         if form.is_valid():
@@ -102,22 +113,19 @@ def alta_almacen(request):
             Superficie = form.cleaned_data["Superficie"]
             FechaIniAlquiler_Alm = form.cleaned_data["FechaIniAlquiler_Alm"]
             FechaFinAlquiler_Alm = form.cleaned_data["FechaFinAlquiler_Alm"]
-
             try:
-                with conexion_BD.cursor() as cursor:
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
                     cursor.callproc("dbms_output.enable")
-                    cursor.execute(f"""INSERT INTO LoteProductosAlmacena (IdAlmacen, Direccion_Alm, Superficie, FechaIniAlquiler_Alm, FechaFinAlquiler_Alm)
-                                    VALUES ({str(IdAlmacen)}, {str(Direccion_Alm)}, {str(Superficie)}, {str(FechaIniAlquiler_Alm)}, {str(FechaFinAlquiler_Alm)})""")
-                    statusVar = cursor.var(cx_Oracle.NUMBER)
-                    lineVar = cursor.var(cx_Oracle.STRING)
-                    errorInsert = ''
-                    while True:
-                        errorInsert += cursor.callproc("dbms_output.get_line", (lineVar, statusVar))
-                        if statusVar.getvalue() != 0:
-                            break
-                return HttpResponseRedirect('/menu_almacen')
+                    cursor.execute(f"""INSERT INTO Almacen (IdAlmacen, Direccion, Superficie, FechaInicioAlquiler_Alm, FechaFinAlquiler_Alm)
+                                        VALUES ('{str(IdAlmacen)}', '{str(Direccion_Alm)}', {str(Superficie)}, TO_DATE('{FechaIniAlquiler_Alm}','YYYY-MM-DD'), TO_DATE('{FechaFinAlquiler_Alm}','YYYY-MM-DD'))""")
+                    cursor.execute("COMMIT")
+                return HttpResponseRedirect('/menu/almacen')
             except:
-                error_message="ERROR en la inserción a la Base de Datos de la información del almacen"
+                errorInsert = getDBMS(cursor)
+                if errorInsert == "" :
+                    error_message ="ERROR en la inserción a la Base de Datos de la información del almacén"
+                else:
+                    error_message = errorInsert
                 return render(request,"alta_almacen.html",{'form':form, 'error_message':error_message})
         else:
             error_message="ERROR en los campos a rellenar del almacen"
@@ -130,25 +138,29 @@ def baja_almacen(request):
         form = pkAlmacenForm( request.POST )
         if form.is_valid():
             IdAlmacen = form.cleaned_data["IdAlmacen"]
-
             try:
-                with conexion_BD.cursor() as cursor:
-                    cursor.callproc(f"""almacen_borrado({str(IdAlmacen)}""")
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                    cursor.callproc("dbms_output.enable")
+                    cursor.execute(f"""BEGIN almacen_borrado('{str(IdAlmacen)}'); END;""")
+                    print("se esta petando aqui")
                     cursor.execute(f"""DELETE FROM Almacen
                                     WHERE IdAlmacen = '{str(IdAlmacen)}'""")
-                return HttpResponseRedirect('/menu_almacen')
+                    print("o aqui")
+                    confirmation_message = getDBMS(cursor)
+                    cursor.execute("COMMIT")
+                return render(request,"menu_almacen.html",{'confirmation_message':confirmation_message})
             except:
                 error_message="ERROR en el borrado del almacen"
-                return render(request,"baja_lote.html",{'form':form, 'error_message':error_message})
+                return render(request,"baja_almacen.html",{'form':form, 'error_message':error_message})
         else:
             error_message="ERROR en el identificador del almacen"
-            return render(request,"baja_lote.html",{'form':form, 'error_message':error_message})
-    return render(request,"baja_lote.html",{'form':form})
+            return render(request,"baja_almacen.html",{'form':form, 'error_message':error_message})
+    return render(request,"baja_almacen.html",{'form':form})
 
 def listar_almacenes(request):
     try:
-        almacenes = []
-        with conexion_BD.cursor() as cursor:
+        with Conexion_BD().get_conexion_BD().cursor() as cursor:
+            almacenes = []
             cursor.execute("SELECT * FROM Almacen")
             almacenes = [ {'IdAlmacen':fila[0], 'Direccion_Alm':fila[1], 'Superficie':fila[2], 'FechaIniAlquiler_Alm':fila[3], 'FechaFinAlquiler_Alm':fila[4]} for fila in cursor.fetchall() ]
 
@@ -156,4 +168,4 @@ def listar_almacenes(request):
         return render(request, "listar_almacenes.html", {'almacenes':almacenes, 'tabla_vacia':tabla_vacia})
     except:
         error_message="ERROR. Las tablas no se han podido mostrar"
-        return render(request, "menu_almacen.html", {'error_message':error_message})
+        return render(request, "listar_almacenes.html", {'error_message':error_message})

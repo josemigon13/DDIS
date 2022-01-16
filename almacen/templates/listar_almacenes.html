@@ -9,11 +9,10 @@
 <form method="post">
     {% csrf_token %}
 
-    <!--
-    {% if error_message_mostrar_tabs %}
+    {% if error_message %}
         <br>
         <div class="alert alert-danger">
-            <center>{{ error_message_mostrar_tabs }}</div></center>
+            <center>{{ error_message }}</div></center>
         </div>
         
     {% elif tablas_vacias %}
@@ -22,9 +21,7 @@
             <center>Las tablas de la Base de Datos están vacías</div></center>
         </div>
     
-    {% endif%}
-    -->
-    
+    {% else %}
     <center>
         <h1> Lista de Almacenes </h1> 
     <table border>
@@ -32,16 +29,17 @@
         <th scope="col"> IdAlmacén </th>
         <th scope="col"> Dirección </th>
         <th scope="col"> Superficie (metros cuadrados)</th>
-        <th scope="col"> FechaInicioAlquiler </th>
-        <th scope="col"> FechaFinAlquiler </th>
+        <th scope="col"> Fecha Inicio Alquiler </th>
+        <th scope="col"> Fecha Fin Alquiler </th>
     </tr>
     {% for almacen in almacenes %}
     <tr align=center>
-        <td>{{almacen.IdAlmacén}}</td><td>{{almacen.Dirección}}</td><td>{{almacen.Superficie}}</td><td>{{almacen.FechaInicioAlquiler}}</td><td>{{almacen.FechaFinAlquiler}}</td>
+        <td>{{almacen.IdAlmacen}}</td><td>{{almacen.Direccion_Alm}}</td><td>{{almacen.Superficie}}</td><td>{{almacen.FechaIniAlquiler_Alm}}</td><td>{{almacen.FechaFinAlquiler_Alm}}</td>
     </tr>
     {% endfor %}
     </table>
     </center>
+    {% endif %}
 </form>
 <center>
     <div>

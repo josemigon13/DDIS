@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 
 {% block css %}
-<link rel="stylesheet" href="../../static/style.css">
+<link rel="stylesheet" href="../../../static/style.css">
 {% endblock css %}
 
 {% block title %}
@@ -55,6 +55,13 @@
     <br>
     <div class="alert alert-danger">
         <center>{{ error_message }}</div></center>
+    </div>
+    {% endif %}
+
+    {% if confirmation_message %}
+    <br>
+    <div class="alert alert-danger">
+        <center>{{ confirmation_message }}</div></center>
     </div>
     {% endif %}
 </form> 
