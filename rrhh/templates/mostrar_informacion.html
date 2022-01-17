@@ -1,0 +1,80 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../../static/style.css">
+{% endblock css %}
+
+{% block title %}
+<title> Menu para mostrar información de recursos humanos </title>
+{% endblock title %}
+
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+
+<center>
+
+{% if tablas_vacias %}
+    <br>
+    <div class="alert alert-info">
+        <center>Las tablas de Marketing en la Base de Datos están vacías</div></center>
+    </div>
+{% endif%}
+
+<br>    
+<h2>Contratos</h2>
+<table border>
+<tr align=center>
+    <th scope="col"> DNI </th>
+    <th scope="col"> IDOfertaEmpleo </th>
+    <th scope="col"> Nombre_Empleado </th>
+    <th scope="col"> Tlf_Empleado </th>
+    <th scope="col"> NumSegSocial </th>
+    <th scope="col"> salario </th>
+</tr>
+{% for tupla in Contrato %}
+<tr align=center>
+    <td>{{tupla.DNI}}</td><td> {{tupla.IDOfertaEmpleo}}</td>
+    <td>{{tupla.Nombre_Empleado}}</td><td> {{tupla.Tlf_Empleado}}</td>
+    <td>{{tupla.NumSegSocial}}</td><td> {{tupla.salario}}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Ofertas de Empleo</h2>
+<table border>
+<tr align=center>
+    <th scope="col"> IDOfertaEmpleo </th>
+    <th scope="col"> ListadoEmpleos </th>
+    <th scope="col"> FechaIni_OferEmp </th>
+    <th scope="col"> FechaFin_OferEmp </th>
+
+</tr>
+{% for tupla in OfertaEmpleo %}
+<tr align=center>
+    <td> {{tupla.IDOfertaEmpleo}}</td>
+    <td>{{tupla.ListadoEmpleos}}</td><td> {{tupla.FechaIni_OferEmp}}</td>
+    <td>{{tupla.FechaFin_OferEmp}}</td>
+</tr>
+{% endfor %}
+</table>
+
+</center>
+
+<center>
+    <div>
+        <a href="{% url 'rrhh:menu_rrhh' %}" class="btn btn-secondary" id="volver-menu-rrhh-btn">Volver atrás</a>
+    </div>
+</center>
+
+{% if error_message %}
+    <br>
+    <div class="alert alert-danger">
+        <center>{{ error_message }}</div></center>
+    </div>
+{% endif %}
+
+</form>
+
+{% endblock content %}

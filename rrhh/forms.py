@@ -25,11 +25,6 @@ class AltaContratoForm(forms.Form):
 
 
 class BajaContratoForm(forms.Form):
-    #DNI = forms.CharField( max_length=9,
-    #                       label="Identificador de Contrato", 
-    #                        widget=forms.TextInput(attrs={'placeholder': "Introduce el DNI del empleado cuyo contrato quiere dar de baja"}))
-
-
 
     def __init__(self, *args, **kwargs):
         super(BajaContratoForm, self).__init__(*args, **kwargs)
@@ -76,9 +71,6 @@ class AltaOfertaForm(forms.Form):
 
 
 class BajaOfertaForm(forms.Form):
-    #IDOfertaEmpleo = forms.CharField( max_length=9,
-    #                                label="ID oferta de empleo", 
-    #                                widget=forms.TextInput(attrs={'placeholder': "Introduce el identificador de la oferta de empleo a dar de baja"}))
 
     def __init__(self, *args, **kwargs):
         super(BajaOfertaForm, self).__init__(*args, **kwargs)

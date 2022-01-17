@@ -20,6 +20,9 @@ def menu_rrhh(request):
             return HttpResponseRedirect("alta_oferta_emp")
         if 'baja-oferta-emp-btn' in keys_request_POST:
             return HttpResponseRedirect("baja_oferta_emp")
+        if 'mostrar-informacion-btn' in keys_request_POST:
+            return HttpResponseRedirect("mostrar_informacion")
+            
         
     return render(request,"menu_rrhh.html")
 
@@ -206,3 +209,28 @@ def baja_oferta_emp(request):
             return render(request,"baja_oferta_emp.html", {"form": form, "error_message": error_message})
             
     return render(request,"baja_oferta_emp.html", {"form":BajaOfertaForm()})
+
+
+
+def mostrar_informacion(request):
+    #try:
+    with Conexion_BD().get_conexion_BD().cursor() as cursor:
+        Contrato, OfertaEmpleo = [], []
+
+        cursor.execute("SELECT * FROM Contrato")
+        Contrato = [ ( fila[0], {'DNI':fila[0], 'IDOfertaEmpleo':fila[1], 'Nombre_Empleado':fila[2], 'Tlf_Empleado':fila[3], 'NumSegSocial':fila[4], 'salario':fila[5] }) for fila in cursor.fetchall()]
+        Contrato_sorted = sorted(Contrato, key=itemgetter(0))
+        Contrato = [ Contrato_sorted[i][1] for i in range(0,len(Contrato))]
+
+        cursor.execute("SELECT * FROM OfertaEmpleo")
+        OfertaEmpleo = [( fila[0],  {'IDOfertaEmpleo':fila[0], 'ListadoEmpleos':fila[1], 'FechaIni_OferEmp':fila[2], 'FechaFin_OferEmp':fila[3]}) for fila in cursor.fetchall()]
+        OfertaEmpleo_sorted = sorted(OfertaEmpleo, key=itemgetter(0))
+        OfertaEmpleo = [ OfertaEmpleo_sorted[i][1] for i in range(0,len(OfertaEmpleo))]
+
+        tablas_vacias = (len(Contrato) == 0)
+
+        return render( request, "mostrar_informacion.html", { 'Contrato':Contrato, 'OfertaEmpleo':OfertaEmpleo, 'tablas_vacias':tablas_vacias })
+        
+    #except:
+    #    error_message="error en la obtención de los datos."
+    #    return render( request, "mostrar_informacion.html", {"error_message": error_message})
