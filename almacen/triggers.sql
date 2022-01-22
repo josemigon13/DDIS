@@ -20,7 +20,7 @@ END;
 
 CREATE OR REPLACE TRIGGER insert_lote
     BEFORE
-    INSERT ON LoteProductosAlmacena
+    INSERT ON LoteProductos
     FOR EACH ROW
 DECLARE
     errorCoste EXCEPTION;
@@ -46,7 +46,7 @@ END;
 --Método para mostrar la descripción del lote borrado--
 
 CREATE OR REPLACE PROCEDURE lote_borrado(idLote VARCHAR2) AS
-	CURSOR lLote IS SELECT * FROM LoteProductosAlmacena;
+	CURSOR lLote IS SELECT * FROM LoteProductos;
 	registroLote lLote%ROWTYPE;
 BEGIN
 	OPEN lLote;

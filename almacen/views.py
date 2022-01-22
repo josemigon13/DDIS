@@ -36,10 +36,9 @@ def menu_almacen(request):
     return render(request,"menu_almacen.html")
 
 def alta_lote(request):
-    form = LoteProductosAlmacenaForm()
-    errorInsert = ""
+    form = LoteProductosForm()
     if request.method == 'POST' :
-        form = LoteProductosAlmacenaForm( request.POST )
+        form = LoteProductosForm( request.POST )
         if form.is_valid():
             IdLote = form.cleaned_data["IdLote"]
             IdAlmacen = form.cleaned_data["IdAlmacen"]
@@ -49,17 +48,12 @@ def alta_lote(request):
             Coste_Lote = form.cleaned_data["Coste_Lote"]
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                    cursor.callproc("dbms_output.enable")
-                    cursor.execute(f"""INSERT INTO LoteProductosAlmacena (IdLote, IdAlmacen, Descripcion_Lote, Unidad, Cantidad, Coste_Lote)
+                    cursor.execute(f"""INSERT INTO LoteProductos (IdLote, IdAlmacen, Descripcion_Lote, Unidad, Cantidad, Coste_Lote)
                                     VALUES ('{str(IdLote)}', '{str(IdAlmacen)}', '{str(Descripcion_Lote)}', '{str(Unidad)}', {str(Cantidad_Lote)}, {str(Coste_Lote)})""")
-                    errorInsert = getDBMS(cursor)
                     cursor.execute("COMMIT")
                 return HttpResponseRedirect('/menu/almacen')
             except:
-                if errorInsert == "" :
-                    error_message="ERROR en la inserción a la Base de Datos de la información del lote"
-                else:
-                    error_message = errorInsert
+                error_message="ERROR en la inserción a la Base de Datos de la información del lote"
                 return render(request,"alta_lote.html",{'form':form, 'error_message':error_message})
         else:
             error_message="ERROR en los campos a rellenar del lote"
@@ -67,9 +61,9 @@ def alta_lote(request):
     return render(request,"alta_lote.html",{'form':form})
 
 def baja_lote(request):
-    form = pkLoteProductosAlmacenaForm()
+    form = pkLoteProductosForm()
     if request.method == 'POST' :
-        form = pkLoteProductosAlmacenaForm( request.POST )
+        form = pkLoteProductosForm( request.POST )
         if form.is_valid():
             IdLote = form.cleaned_data["IdLote"]
             try:
@@ -77,7 +71,7 @@ def baja_lote(request):
                     cursor.callproc("dbms_output.enable")
                     cursor.execute(f"""BEGIN lote_borrado('{str(IdLote)}'); END;""")
                     confirmation_message = getDBMS(cursor)
-                    cursor.execute(f"""DELETE FROM LoteProductosAlmacena
+                    cursor.execute(f"""DELETE FROM LoteProductos
                                     WHERE IdLote = '{str(IdLote)}'""")
                     cursor.execute("COMMIT")
                 return render(request,"menu_almacen.html",{'confirmation_message':confirmation_message})
@@ -93,7 +87,7 @@ def listar_lotes(request):
     try:
         with Conexion_BD().get_conexion_BD().cursor() as cursor:
             lotes = []
-            cursor.execute("SELECT * FROM LoteProductosAlmacena")
+            cursor.execute("SELECT * FROM LoteProductos ORDER BY LENGTH(IdLote)")
             lotes = [ {'IdLote':fila[0], 'IdAlmacen':fila[1], 'Descripcion_Lote':fila[2], 'Unidad':fila[3], 'Cantidad_Lote':fila[4], 'Coste_Lote':fila[5]} for fila in cursor.fetchall() ]
 
         tabla_vacia = len(lotes)==0
@@ -104,7 +98,6 @@ def listar_lotes(request):
 
 def alta_almacen(request):
     form = AlmacenForm()
-    errorInsert = ""
     if request.method == 'POST' :
         form = AlmacenForm( request.POST )
         if form.is_valid():
@@ -115,17 +108,12 @@ def alta_almacen(request):
             FechaFinAlquiler_Alm = form.cleaned_data["FechaFinAlquiler_Alm"]
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                    cursor.callproc("dbms_output.enable")
                     cursor.execute(f"""INSERT INTO Almacen (IdAlmacen, Direccion, Superficie, FechaInicioAlquiler_Alm, FechaFinAlquiler_Alm)
                                         VALUES ('{str(IdAlmacen)}', '{str(Direccion_Alm)}', {str(Superficie)}, TO_DATE('{FechaIniAlquiler_Alm}','YYYY-MM-DD'), TO_DATE('{FechaFinAlquiler_Alm}','YYYY-MM-DD'))""")
                     cursor.execute("COMMIT")
                 return HttpResponseRedirect('/menu/almacen')
             except:
-                errorInsert = getDBMS(cursor)
-                if errorInsert == "" :
-                    error_message ="ERROR en la inserción a la Base de Datos de la información del almacén"
-                else:
-                    error_message = errorInsert
+                error_message ="ERROR en la inserción a la Base de Datos de la información del almacén"
                 return render(request,"alta_almacen.html",{'form':form, 'error_message':error_message})
         else:
             error_message="ERROR en los campos a rellenar del almacen"
@@ -161,7 +149,7 @@ def listar_almacenes(request):
     try:
         with Conexion_BD().get_conexion_BD().cursor() as cursor:
             almacenes = []
-            cursor.execute("SELECT * FROM Almacen")
+            cursor.execute("SELECT * FROM Almacen ORDER BY LENGTH(IdAlmacen)")
             almacenes = [ {'IdAlmacen':fila[0], 'Direccion_Alm':fila[1], 'Superficie':fila[2], 'FechaIniAlquiler_Alm':fila[3], 'FechaFinAlquiler_Alm':fila[4]} for fila in cursor.fetchall() ]
 
         tabla_vacia = len(almacenes)==0

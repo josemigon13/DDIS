@@ -18,7 +18,7 @@ class AlmacenForm( forms.Form ):
                 widget=forms.TextInput(attrs={'placeholder': "Introduce la fecha de fin de alquiler"})
     )
 
-class LoteProductosAlmacenaForm( forms.Form ):
+class LoteProductosForm( forms.Form ):
     IdLote = forms.CharField( 
                 label="IdLote",
                 widget=forms.TextInput(attrs={'placeholder': "Introduce el identificador del lote"}))
@@ -44,7 +44,7 @@ class pkAlmacenForm( forms.Form ):
                 label="IdAlmacen",
                 widget=forms.TextInput(attrs={'placeholder': "Introduce el identificador del almacén"}))
                 
-class pkLoteProductosAlmacenaForm( forms.Form ):
+class pkLoteProductosForm( forms.Form ):
     IdLote = forms.CharField( 
                 label="IdLote",
                 widget=forms.TextInput(attrs={'placeholder': "Introduce el identificador del lote"}))
