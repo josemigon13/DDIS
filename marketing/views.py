@@ -277,7 +277,7 @@ def consultar_tablas_marketing(request):
 			# (se añadió el 1er y el 2º item del par para la ordenacion)
 			promociona = [ promociona_sort[i][2] for i in range(0,len(promociona_sort))]
 
-		tablas_vacias = (len(camp_pubs) == 0 and len(ofertas) == 0 and len(ofertas) == 0)
+		tablas_vacias = (len(camp_pubs) == 0 and len(ofertas) == 0 and len(promociona) == 0)
 
 		# El segundo argumento (eleccion_menu_actual) tendrá la página html del menú correspondiente donde nos
 		# encontremos y se muestren justo ahí las tablas a continuación de las opciones del respectivo menú:
