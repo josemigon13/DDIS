@@ -87,7 +87,7 @@ def listar_lotes(request):
     try:
         with Conexion_BD().get_conexion_BD().cursor() as cursor:
             lotes = []
-            cursor.execute("SELECT * FROM LoteProductos ORDER BY LENGTH(IdLote)")
+            cursor.execute("SELECT * FROM LoteProductos ORDER BY LENGTH(IdLote), IdLote")
             lotes = [ {'IdLote':fila[0], 'IdAlmacen':fila[1], 'Descripcion_Lote':fila[2], 'Unidad':fila[3], 'Cantidad_Lote':fila[4], 'Coste_Lote':fila[5]} for fila in cursor.fetchall() ]
 
         tabla_vacia = len(lotes)==0
@@ -149,7 +149,7 @@ def listar_almacenes(request):
     try:
         with Conexion_BD().get_conexion_BD().cursor() as cursor:
             almacenes = []
-            cursor.execute("SELECT * FROM Almacen ORDER BY LENGTH(IdAlmacen)")
+            cursor.execute("SELECT * FROM Almacen ORDER BY LENGTH(IdAlmacen), IdAlmacen")
             almacenes = [ {'IdAlmacen':fila[0], 'Direccion_Alm':fila[1], 'Superficie':fila[2], 'FechaIniAlquiler_Alm':fila[3], 'FechaFinAlquiler_Alm':fila[4]} for fila in cursor.fetchall() ]
 
         tabla_vacia = len(almacenes)==0
