@@ -252,7 +252,7 @@ INSERT INTO CampañaPublicitaria (IdCampaña, Nombre_CampPub, Descripcion_CampPu
 VALUES ('CP-7', 'Campaña a la romana', 
         'Ofrecer platos de degustación con ingredientes exclusivos de la capital italiana',
         '999,99', 'Mediaset, Atresmedia',
-        TO_DATE('2022/1/1','yyyy-mm-dd'), TO_DATE('2022/1/20','yyyy-mm-dd'));
+        TO_DATE('2022/1/7','yyyy-mm-dd'), TO_DATE('2022/1/20','yyyy-mm-dd'));
         
 INSERT INTO CampañaPublicitaria (IdCampaña, Nombre_CampPub, Descripcion_CampPub, 
         Precio_CampPub, ListaMediosEmision, FechaIni_CampPub, FechaFin_CampPub)
