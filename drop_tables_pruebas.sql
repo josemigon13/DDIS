@@ -34,3 +34,6 @@ SELECT * FROM PEDIDO;
 SELECT * FROM PROVEEDOR;
 ALTER SESSION SET PLSCOPE_SETTINGS = 'IDENTIFIERS:NONE'; 
 -- lo tuve que añadir para poder compilar un trigger que no me dejaba por error en algún momento
+
+DROP TABLE Stock;
+DROP TABLE Detalle_Pedido;

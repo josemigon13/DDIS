@@ -325,7 +325,8 @@ def baja_camp_pub(request):
 			except:
 				# Deshacemos las posibles eliminaciones ("cancelamos la operación de forma lógica") 
 				# en las tablas con rollback si se produce cualquier excepción en las sentencias delete SQL
-				cursor.execute("ROLLBACK TO SAVEPOINT save_previa_baja_camp_pub")
+				with Conexion_BD().get_conexion_BD().cursor() as cursor:
+					cursor.execute("ROLLBACK TO SAVEPOINT save_previa_baja_camp_pub")
 				error_message=f"ERROR al tratar de eliminar la Campaña publicitaria con identificador {IdCampaña}"
 				return render(request,"baja_camp_pub.html", {'form':form, "error_message": error_message})
 
@@ -465,7 +466,8 @@ def baja_ofer_prod(request):
 				# Deshacemos las posibles eliminaciones ("cancelamos la operación de forma lógica") 
 				# en las tablas con rollback si se produce cualquier excepción en el trigger o
 				# o antes pues tablas como Promociona podrían afectarse
-				cursor.execute("ROLLBACK TO SAVEPOINT save_previa_baja_ofer_prod")
+				with Conexion_BD().get_conexion_BD().cursor() as cursor:
+					cursor.execute("ROLLBACK TO SAVEPOINT save_previa_baja_ofer_prod")
 				error_message=f"""ERROR al tratar de eliminar la Oferta de Productos con identificador
 									{str(IdOfertaProd)}. {message_from_trigger}"""
 				return render(request,"baja_ofer_prod.html", {'form':form, "error_message": error_message})

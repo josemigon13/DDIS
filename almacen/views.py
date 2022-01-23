@@ -136,16 +136,23 @@ def baja_almacen(request):
                     cursor.execute("SAVEPOINT save_almacen")
                     cursor.execute(f"""SELECT * FROM Almacen WHERE IdAlmacen='{str(IdAlmacen)}'""")
                     existe_almacen = cursor.fetchone()
-
+                    # Se comprueba si el almacén escogido a borrar está en la base de datos
                     if existe_almacen:
                         cursor.callproc("dbms_output.enable")
                         cursor.execute(f"""BEGIN almacen_borrado('{str(IdAlmacen)}'); END;""")
 
                     cursor.execute(f"""SELECT * FROM LoteProductos WHERE IdAlmacen='{str(IdAlmacen)}'""")
                     existe_lote = cursor.fetchone()
-
+                    # Se comprueba si para tal almacén tiene en Loteproductos algun lote que lo referencie y se borra colateralmente
                     if existe_lote:
                         cursor.execute(f"""DELETE FROM LoteProductos WHERE IdAlmacen = '{str(IdAlmacen)}'""")
+                    
+                    cursor.execute(f"""SELECT * FROM Pedido WHERE IdAlmacen='{str(IdAlmacen)}'""")
+                    existen_pedidos_asociados = cursor.fetchone()
+                    
+                    # Se comprueba si para tal almacén tiene en Pedido algun pedido que lo referencie y se borra colateralmente
+                    if existen_pedidos_asociados:
+                        cursor.execute(f"""DELETE FROM Pedido WHERE IdAlmacen = '{str(IdAlmacen)}'""")
 
                     cursor.execute(f"""DELETE FROM Almacen WHERE IdAlmacen = '{str(IdAlmacen)}'""")
                     confirmation_message = getDBMS(cursor)

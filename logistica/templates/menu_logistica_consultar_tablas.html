@@ -1,0 +1,16 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../static/style.css">
+{% endblock css %}
+
+{% block title %}
+<title> Menú Logística </title>
+{% endblock title %}
+
+{% block content %}
+
+{% include "menu_logistica.html" %}
+{% include "consultar_tablas_logistica.html" %}
+
+{% endblock content %}

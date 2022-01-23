@@ -1,0 +1,60 @@
+<center> <h1> Menú Logística </h1> </center>
+<br>
+<center> <h3> Selecciona la acción a realizar:</h3> </center>
+
+<form method="post">  
+    {% csrf_token %}
+    <div>
+        <button class="btn btn-success" id="alta-proveedor-btn" name="alta-proveedor-btn" type="submit">
+            Dar de alta proveedor
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-danger" id="baja-proveedor-btn" name="baja-proveedor-btn" type="submit">
+            Dar de baja proveedor
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="consultar-proveedor-btn" name="consultar-proveedor-btn" type="submit">
+            Consultar proveedor
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-success" id="alta-pedido-btn" name="alta-pedido-btn" type="submit">
+            Dar de alta pedido
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-danger" id="baja-pedido-btn" name="baja-pedido-btn" type="submit">
+            Dar de baja pedido
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="consultar-pedido-btn" name="consultar-pedido-btn" type="submit">
+            Consultar pedido
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-secondary" id="consultar-tablas-logistica-btn" name="consultar-tablas-logistica-btn" type="submit">
+            Consultar Tablas del Área de Logística
+        </button>
+    </div>
+    <center>
+        <div>
+            <a href="{% url 'login_menu_pral:menu' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+        </div>
+        </center>
+    {% if error_message %}
+    <br>
+    <div class="alert alert-danger">
+        <center>{{ error_message }}</div></center>
+    </div>
+    {% endif %}
+
+    {% if confirmation_message %}
+    <br>
+    <div class="alert alert-danger">
+        <center>{{ confirmation_message }}</div></center>
+    </div>
+    {% endif %}
+</form> 

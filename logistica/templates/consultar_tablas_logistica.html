@@ -1,0 +1,61 @@
+<form method="post">
+    {% csrf_token %}
+
+    {% if error_message_mostrar_tabs %}
+        <br>
+        <div class="alert alert-danger">
+            <center>{{ error_message_mostrar_tabs }}</div></center>
+        </div>
+        
+    {% elif tablas_vacias %}
+        <br>
+        <div class="alert alert-info">
+            <center>Las tablas de Logística en la Base de Datos están vacías</div></center>
+        </div>
+    
+    {% endif%}
+    {% if incluir_mostrar_tablas %}
+        <center>
+        <h2>Tabla de Proveedor</h2>
+        <table border>
+        <tr align=center>
+            <th scope="col"> NumProveedor </th>
+            <th scope="col"> Nombre_Prov </th>
+            <th scope="col"> DireccionWeb_Prov </th>
+            <th scope="col"> Tlf_Prov </th>
+        </tr>
+        {% for tupla in proveedores %}
+        <tr align=center>
+            <td>{{tupla.NumProveedor}}</td>
+            <td>{{tupla.Nombre_Prov}}</td>
+            <td>{{tupla.DireccionWeb_Prov}}</td>
+            <td>{{tupla.Tlf_Prov}}</td>
+        </tr>
+        {% endfor %}
+        </table>
+
+        <br>
+        <h2>Tabla de Pedidos</h2>
+        <table border>
+        <tr align=center> 
+            <th scope="col"> NumPedido </th>
+            <th scope="col"> NumProveedor </th>
+    		<th scope="col"> IdAlmacen </th>
+            <th scope="col"> Articulos </th>
+            <th scope="col"> Fecha_Ped </th>
+            <th scope="col"> precio_pedido </th>
+        </tr>
+        {% for tupla in pedidos %}
+        <tr align=center>
+            <td>{{tupla.NumPedido}}</td>
+            <td>{{tupla.NumProveedor}}</td>
+            <td>{{tupla.IdAlmacen}}</td>
+            <td>{{tupla.Articulos}}</td>
+            <td>{{tupla.Fecha_Ped}}</td>
+            <td>{{tupla.Precio_Ped}}</td>
+        </tr>
+        {% endfor %}
+        </table>
+        </center>
+    {% endif %}
+</form>

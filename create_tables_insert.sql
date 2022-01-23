@@ -89,6 +89,8 @@ CREATE TABLE Proveedor
 CREATE TABLE Pedido
 (
 	NumPedido INT PRIMARY KEY,
+        NumProveedor NOT NULL REFERENCES Proveedor( NumProveedor ),
+	IdAlmacen NOT NULL REFERENCES Almacen( IdAlmacen ),
 	Articulos VARCHAR2( 200 ),
 	Fecha_Ped DATE,
 	Precio_Ped FLOAT,
@@ -103,7 +105,7 @@ INSERT INTO Proveedor (NumProveedor, Nombre_Prov, DireccionWeb_Prov, Tlf_Prov)
 VALUES (1, 'Proveo S.A.', 'www.proveo.com', '+34611111111');
 
 INSERT INTO Proveedor (NumProveedor, Nombre_Prov, DireccionWeb_Prov, Tlf_Prov)
-VALUES (2, 'Provees S.A.', 'www.provees.com', '+39622222222');
+	VALUES (2, 'Provees S.A.', 'www.provees.com', '+39622222222');
 
 INSERT INTO Proveedor (NumProveedor, Nombre_Prov, DireccionWeb_Prov, Tlf_Prov)
 VALUES (3, 'Provee S.A.', 'www.provee.com', '+39633333333');
@@ -130,52 +132,52 @@ INSERT INTO Proveedor (NumProveedor, Nombre_Prov, DireccionWeb_Prov, Tlf_Prov)
 VALUES (10, 'Proveíais S.A.', 'www.proveíais.com', '+39612345678');
 
 
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (1, 1, 'Alm1','Jamón serrano 50kg', TO_DATE( '1/1/2021', 'DD/MM/YYYY' ), 500);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (2, 1, 'Alm2','Aceitunas picual 40kg', TO_DATE( '2/2/2021', 'DD/MM/YYYY' ), 200);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (3, 2, 'Alm3','Mozzarella de buffala 20kg', TO_DATE( '3/3/2021', 'DD/MM/YYYY' ), 220);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (4, 2, 'Alm4','Burrata 150kg', TO_DATE( '4/4/2021', 'DD/MM/YYYY' ), 700);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (5, 3, 'Alm5','Pecorino romano 25kg', TO_DATE( '5/5/2021', 'DD/MM/YYYY' ), 150);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (6, 3, 'Alm6','Farina 100kg, frumento 80kg', TO_DATE( '6/6/2021', 'DD/MM/YYYY' ), 120);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (7, 4, 'Alm7','Grana padano 50kg', TO_DATE( '7/7/2021', 'DD/MM/YYYY' ), 300);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (8, 4, 'Alm8','Mascarpone 30kg', TO_DATE( '8/8/2021', 'DD/MM/YYYY' ), 350);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (9, 5, 'Alm9','Gorgonzola 70kg', TO_DATE( '9/9/2021', 'DD/MM/YYYY' ), 170);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (10, 5, 'Alm10','Provolone 40kg', TO_DATE( '10/10/2021', 'DD/MM/YYYY' ), 370);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (11, 1, 'Alm1','Queso cabrales 40kg', TO_DATE( '10/10/2021', 'DD/MM/YYYY' ), 240);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (12, 1, 'Alm1','Vino chianti 10l', TO_DATE( '12/12/2021', 'DD/MM/YYYY' ), 250);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (13, 1, 'Alm1','Vino marsala 15l', TO_DATE( '10/10/2021', 'DD/MM/YYYY' ), 200);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (14, 1, 'Alm1','Amaretto 10l', TO_DATE( '10/10/2021', 'DD/MM/YYYY' ), 150);
+
+INSERT INTO Pedido (NumPedido, NumProveedor, IdAlmacen, Articulos, Fecha_Ped, Precio_Ped)
+VALUES (15, 1, 'Alm1','Prosciuto 50kg', TO_DATE( '11/11/2021', 'DD/MM/YYYY' ), 400);
 
 
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (1, 'Jamón serrano 50kg', TO_DATE( '1/1/2021', 'DD/MM/YYYY' ), 500);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (2, 'Aceitunas picual 40kg', TO_DATE( '2/2/2021', 'DD/MM/YYYY' ), 200);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (3, 'Mozzarella de buffala 20kg', TO_DATE( '3/3/2021', 'DD/MM/YYYY' ), 220);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (4, 'Burrata 150kg', TO_DATE( '4/4/2021', 'DD/MM/YYYY' ), 700);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (5, 'Pecorino romano 25kg', TO_DATE( '5/5/2021', 'DD/MM/YYYY' ), 150);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (6, 'Farina 100kg, frumento 80kg', TO_DATE( '6/6/2021', 'DD/MM/YYYY' ), 120);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (7, 'Grana padano 50kg', TO_DATE( '7/7/2021', 'DD/MM/YYYY' ), 300);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (8, 'Mascarpone 30kg', TO_DATE( '8/8/2021', 'DD/MM/YYYY' ), 350);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (9, 'Gorgonzola 70kg', TO_DATE( '9/9/2021', 'DD/MM/YYYY' ), 170);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (10, 'Provolone 40kg', TO_DATE( '10/10/2021', 'DD/MM/YYYY' ), 370);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (11, 'Queso cabrales 40kg', TO_DATE( '10/10/2021', 'DD/MM/YYYY' ), 240);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (12, 'Vino chianti 10l', TO_DATE( '12/12/2021', 'DD/MM/YYYY' ), 250);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (13, 'Vino marsala 15l', TO_DATE( '10/10/2021', 'DD/MM/YYYY' ), 200);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (14, 'Amaretto 10l', TO_DATE( '10/10/2021', 'DD/MM/YYYY' ), 150);
-
-INSERT INTO Pedido (NumPedido, Articulos, Fecha_Ped, Precio_Ped)
-VALUES (15, 'Prosciuto 50kg', TO_DATE( '11/11/2021', 'DD/MM/YYYY' ), 400);
 
 
 -- creación de tablas del área funconal de Marketing

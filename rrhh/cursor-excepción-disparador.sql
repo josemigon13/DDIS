@@ -11,7 +11,7 @@ BEGIN
 EXCEPTION
     WHEN errSalario THEN 
         DBMS_OUTPUT.PUT_LINE(' El salario debe ser superior a 965 euros, ya que es el salario minimo');
-        raise_application_error(-20600, :new.IdInforme || ' Salario no válido');
+        raise_application_error(-20600, :new.Salario || ' Salario no válido');
 END;
 
 
@@ -27,7 +27,7 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Nuevo contrato insertado: { DNI:' || DNI ||
     ',  Nombre del empleado:' || info_contrato.Nombre_Empleado || ', Id de la oferta de empleo:' || info_contrato.IDOfertaEmpleo || ' }');
     CLOSE mostrar_Contrato;
-END
+END;
 
 CREATE OR REPLACE PROCEDURE IDOfertaEmpleo_OfertaEmpleo(IDOfertaEmpleo VARCHAR2) AS
 	CURSOR mostrar_OfertaEmpleo IS SELECT * FROM OfertaEmpleo;

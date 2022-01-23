@@ -64,12 +64,10 @@ def menu(request):
         elif 'contabilidad-btn' in keys_request_POST:
             return HttpResponseRedirect("contabilidad")
         elif 'logistica-btn' in keys_request_POST:
-            pass
-            # return HttpResponseRedirect("logistica")
+            return HttpResponseRedirect("logistica")
         elif 'marketing-btn' in keys_request_POST:
             return HttpResponseRedirect("marketing")
         elif 'rrhh-btn' in keys_request_POST:
-            pass
             return HttpResponseRedirect("rrhh")
         elif 'cerrar-sesion-bd-app-btn' in keys_request_POST:
             return cerrar_sesion_bd_app()

@@ -1,0 +1,52 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../../static/style.css">
+{% endblock css %}
+
+{% block content %}
+
+<center> <h1> Consulta de Proveedor</h1> </center>
+
+    {% if error_message %}
+        <br>
+        <div class="alert alert-danger">
+            <center>{{ error_message }}</div></center>
+        </div>
+        <br>
+    {% endif%}
+    {% if incluir_mostrar_tablas %}
+        <br>
+        <center>
+        <table border>
+        <tr align=center>
+            <th scope="col"> NumProveedor </th>
+            <th scope="col"> Nombre_Prov </th>
+            <th scope="col"> DireccionWeb_Prov </th>
+            <th scope="col"> Tlf_Prov </th>
+        </tr>
+        <tr align=center>
+            <td>{{proveedor_seleccionado.NumProveedor}}</td>
+            <td> {{proveedor_seleccionado.Nombre_Prov}}</td>
+            <td>{{proveedor_seleccionado.DireccionWeb_Prov}}</td>
+            <td> {{proveedor_seleccionado.Tlf_Prov}}</td>
+        </tr>
+        </table>
+        </center>
+        <br>
+    {% endif%}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="container">
+        {{ form }}
+        <button type="submit">Consultar Proveedor seleccionado</button>   
+    </div>    
+</form>
+    <center>
+    <div>
+        <a href="{% url 'logistica:menu_logistica' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+    </div>
+    </center>
+
+{% endblock content %}

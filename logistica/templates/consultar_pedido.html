@@ -1,0 +1,57 @@
+{% extends 'main.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="../../../static/style.css">
+{% endblock css %}
+
+{% block content %}
+
+<center> <h1> Consulta de Pedido</h1> </center>
+{% if error_message %}
+<br>
+<div class="alert alert-danger">
+    <center>{{ error_message }}</div></center>
+</div>
+<br>
+{% endif%}
+{% if incluir_mostrar_tablas %}
+<br>
+<center>
+<table border>
+<tr align=center>
+    <th scope="col"> NumPedido </th>
+    <th scope="col"> NumProveedor </th>
+    <th scope="col"> IdAlmacen </th>
+    <th scope="col"> Articulos </th>
+    <th scope="col"> Fecha_Ped </th>
+    <th scope="col"> Precio_Ped </th>
+</tr>
+<tr align=center>
+    <td>{{pedido_seleccionado.NumPedido}}</td>
+    <td>{{pedido_seleccionado.NumProveedor}}</td>
+    <td>{{pedido_seleccionado.IdAlmacen}}</td>
+    <td> {{pedido_seleccionado.Articulos}}</td>
+    <td>{{pedido_seleccionado.Fecha_Ped}}</td>
+    <td> {{pedido_seleccionado.Precio_Ped}}</td>  
+</tr>
+</table>
+</center>
+<br>
+{% endif%}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="container">
+        {{ form }}
+        <button type="submit">Consultar Pedido seleccionado</button>   
+    </div>
+    <center>
+</form>
+
+    <div>
+        <a href="{% url 'logistica:menu_logistica' %}" class="btn btn-secondary" id="volver-menu-btn">Volver atrás</a>
+    </div>
+    </center>
+
+
+{% endblock content %}
