@@ -123,7 +123,13 @@ def baja_proveedor(request):
 				with Conexion_BD().get_conexion_BD().cursor() as cursor:
 					# para asegurar que se hacen todas las eliminaciones o ninguna
 					cursor.execute("SAVEPOINT save_previa_baja_proveedor") 
-						
+					
+					cursor.execute(f"""SELECT * FROM Proveedor WHERE NumProveedor = '{NumProveedor}'""")
+					existe_proveedor = cursor.fetchone()
+                    # Se comprueba si el proveedor escogido a borrar está en la base de datos
+					if not existe_proveedor:
+						raise Exception() # directos al flujo de excepcion para mandar mensaje de no haber podido eliminar
+
 					# Elimino el Informe asociado que tiene referencia al proveedor si lo hay, 
 					# y luego al padre (en InformeCuentas)
 					cursor.execute(f"SELECT * FROM InformeProveedor WHERE NumProveedor = '{NumProveedor}'")
@@ -160,12 +166,12 @@ def consultar_proveedor(request):
 		form = pkProveedorForm(request.POST)
 		if form.is_valid():
 		
-			NumProveedor = int(form.cleaned_data["NumProveedor"])
+			NumProveedor = form.cleaned_data["NumProveedor"]
 			
 			try:
 				with Conexion_BD().get_conexion_BD().cursor() as cursor:
 					# Obtención de todos los atributos de la tupla de la tabla Proveedor con identificador NumProveedor
-					cursor.execute(f"SELECT * FROM Proveedor WHERE NumProveedor = '{NumProveedor}'")
+					cursor.execute(f"SELECT * FROM Proveedor WHERE NumProveedor = '{str(NumProveedor)}'")
 					tupla_proveedor =  cursor.fetchone() 
 					proveedor_seleccionado = {	'NumProveedor':tupla_proveedor[0],
 												'Nombre_Prov':tupla_proveedor[1],
@@ -175,7 +181,7 @@ def consultar_proveedor(request):
 				return render( request, "consultar_proveedor.html", 
 							{'form': form, 'incluir_mostrar_tablas':True,'proveedor_seleccionado':proveedor_seleccionado})
 			except:
-				error_message=f"ERROR al consultar el Proveedor con identificador {int(NumProveedor)}"
+				error_message=f"ERROR al consultar el Proveedor con identificador {str(NumProveedor)}"
 				return render(request,"consultar_proveedor.html", {'form':form, "error_message": error_message})
 
 	return render(request,"consultar_proveedor.html",{'form': pkProveedorForm()})
@@ -227,11 +233,17 @@ def baja_pedido(request):
 	if request.method == 'POST':
 		form = pkPedidoForm(request.POST)
 		if form.is_valid():
-			NumPedido = int(form.cleaned_data["NumPedido"]) 	
+			NumPedido = form.cleaned_data["NumPedido"]	
 			try:
 				with Conexion_BD().get_conexion_BD().cursor() as cursor:
+					cursor.execute(f"""SELECT * FROM Pedido WHERE NumPedido='{str(NumPedido)}'""")
+					existe_pedido = cursor.fetchone()
+					# Se comprueba si el almacén escogido a borrar está en la base de datos
+					if not existe_pedido:
+							raise Exception() # directos al flujo de excepcion para mandar mensaje de no haber podido eliminar
+
 					cursor.callproc("dbms_output.enable")
-					cursor.execute(f"""BEGIN pedido_borrado('{str(NumPedido)}'); END;""")
+					cursor.execute(f"""BEGIN pedido_borrado('{int(NumPedido)}'); END;""")
 					success_message = getDBMS(cursor)
 					cursor.execute(f"DELETE FROM Pedido WHERE NumPedido = '{str(NumPedido)}'")
 					cursor.execute("COMMIT")
@@ -252,7 +264,7 @@ def consultar_pedido(request):
 	if request.method == 'POST':
 		form = pkPedidoForm(request.POST)
 		if form.is_valid():
-			NumPedido = int(form.cleaned_data["NumPedido"])
+			NumPedido = form.cleaned_data["NumPedido"]
 			
 			try:
 				with Conexion_BD().get_conexion_BD().cursor() as cursor:
