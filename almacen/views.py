@@ -68,11 +68,15 @@ def baja_lote(request):
             IdLote = form.cleaned_data["IdLote"]
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                    cursor.callproc("dbms_output.enable")
-                    cursor.execute(f"""BEGIN lote_borrado('{str(IdLote)}'); END;""")
+                    cursor.execute(f"""SELECT * FROM LoteProductos WHERE IdLote='{str(IdLote)}'""")
+                    existe_lote = cursor.fetchone()
+
+                    if existe_lote:
+                        cursor.callproc("dbms_output.enable")
+                        cursor.execute(f"""BEGIN lote_borrado('{str(IdLote)}'); END;""")
+
                     confirmation_message = getDBMS(cursor)
-                    cursor.execute(f"""DELETE FROM LoteProductos
-                                    WHERE IdLote = '{str(IdLote)}'""")
+                    cursor.execute(f"""DELETE FROM LoteProductos WHERE IdLote = '{str(IdLote)}'""")
                     cursor.execute("COMMIT")
                 return render(request,"baja_lote.html",{'form':form, 'confirmation_message':confirmation_message})
             except:
@@ -129,9 +133,14 @@ def baja_almacen(request):
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
                     # Se guarda el estado inicial de la BD
-                    cursor.execute("SAVEPOINT save_almacen") 
-                    cursor.callproc("dbms_output.enable")
-                    cursor.execute(f"""BEGIN almacen_borrado('{str(IdAlmacen)}'); END;""")
+                    cursor.execute("SAVEPOINT save_almacen")
+                    cursor.execute(f"""SELECT * FROM Almacen WHERE IdAlmacen='{str(IdAlmacen)}'""")
+                    existe_almacen = cursor.fetchone()
+
+                    if existe_almacen:
+                        cursor.callproc("dbms_output.enable")
+                        cursor.execute(f"""BEGIN almacen_borrado('{str(IdAlmacen)}'); END;""")
+
                     cursor.execute(f"""SELECT * FROM LoteProductos WHERE IdAlmacen='{str(IdAlmacen)}'""")
                     existe_lote = cursor.fetchone()
 
@@ -145,7 +154,7 @@ def baja_almacen(request):
             except:
                 # Si se produce fallo en el borrado de lotes se vuelve al estado inicial de la BD
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
-                    cursor.execute("ROLLBACK save_almacen")
+                    cursor.execute("ROLLBACK TO SAVEPOINT save_almacen")
 
                 error_message="ERROR en el borrado del almacen"
                 return render(request,"baja_almacen.html",{'form':form, 'error_message':error_message})
