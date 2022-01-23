@@ -74,7 +74,7 @@ def baja_lote(request):
                     cursor.execute(f"""DELETE FROM LoteProductos
                                     WHERE IdLote = '{str(IdLote)}'""")
                     cursor.execute("COMMIT")
-                return render(request,"menu_almacen.html",{'confirmation_message':confirmation_message})
+                return render(request,"baja_lote.html",{'form':form, 'confirmation_message':confirmation_message})
             except:
                 error_message="ERROR en el borrado del lote"
                 return render(request,"baja_lote.html",{'form':form, 'error_message':error_message})
@@ -128,16 +128,25 @@ def baja_almacen(request):
             IdAlmacen = form.cleaned_data["IdAlmacen"]
             try:
                 with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                    # Se guarda el estado inicial de la BD
+                    cursor.execute("SAVEPOINT save_almacen") 
                     cursor.callproc("dbms_output.enable")
                     cursor.execute(f"""BEGIN almacen_borrado('{str(IdAlmacen)}'); END;""")
-                    print("se esta petando aqui")
-                    cursor.execute(f"""DELETE FROM Almacen
-                                    WHERE IdAlmacen = '{str(IdAlmacen)}'""")
-                    print("o aqui")
+                    cursor.execute(f"""SELECT * FROM LoteProductos WHERE IdAlmacen='{str(IdAlmacen)}'""")
+                    existe_lote = cursor.fetchone()
+
+                    if existe_lote:
+                        cursor.execute(f"""DELETE FROM LoteProductos WHERE IdAlmacen = '{str(IdAlmacen)}'""")
+
+                    cursor.execute(f"""DELETE FROM Almacen WHERE IdAlmacen = '{str(IdAlmacen)}'""")
                     confirmation_message = getDBMS(cursor)
                     cursor.execute("COMMIT")
-                return render(request,"menu_almacen.html",{'confirmation_message':confirmation_message})
+                return render(request,"baja_almacen.html",{'form':form, 'confirmation_message':confirmation_message})
             except:
+                # Si se produce fallo en el borrado de lotes se vuelve al estado inicial de la BD
+                with Conexion_BD().get_conexion_BD().cursor() as cursor:
+                    cursor.execute("ROLLBACK save_almacen")
+
                 error_message="ERROR en el borrado del almacen"
                 return render(request,"baja_almacen.html",{'form':form, 'error_message':error_message})
         else:

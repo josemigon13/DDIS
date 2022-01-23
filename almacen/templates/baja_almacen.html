@@ -26,13 +26,12 @@
         <center>{{ error_message }}</div></center>
     </div>
     {% endif %}
-    <!--
-    {% if success_message %}
+    
+    {% if confirmation_message %}
     <br>
-    <div class="alert alert-success">
-        <center>{{ success_message }}</div></center>
+    <div class="alert alert-danger">
+        <center>{{ confirmation_message }}</div></center>
     </div>
     {% endif %}
-    -->
 
 {% endblock content %}
